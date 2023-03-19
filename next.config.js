@@ -11,6 +11,7 @@ const nextConfig = {
   },
   transpilePackages: ['@lens-protocol'],
   images: {
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',

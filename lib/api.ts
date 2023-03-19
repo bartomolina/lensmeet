@@ -1,9 +1,24 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 const APIURL = "https://api.lens.dev";
 
-export const apolloClient = new ApolloClient({
+const authLink = setContext((_, { headers }) => {
+  const token = window.sessionStorage.getItem("lens-auth-token");
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+const httpLink = createHttpLink({
   uri: APIURL,
+});
+
+export const apolloClient = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import { getPictureURL } from "../lib/utils";
 
 const ProfileDetails = ({ profile }) => {
   const getProfileAttribute = (attribute: string) => {
@@ -14,33 +15,17 @@ const ProfileDetails = ({ profile }) => {
     linkedin: getProfileAttribute("linkedin"),
   };
 
-  let picture = "/lens.jpeg";
-  if (profile.picture) {
-    if (profile.picture.original && profile.picture.original.url) {
-      if (profile.picture.original.url.startsWith("ipfs://")) {
-        const result = profile.picture.original.url.substring(7, profile.picture.original.url.length);
-        picture = `https://lens.infura-ipfs.io/ipfs/${result}`;
-      } else {
-        picture = profile.picture.original.url;
-      }
-    } else if (profile.picture.uri) {
-      picture = profile.picture.uri;
-    }
-  }
-
   return (
     <li key={profile.id} className="flex border rounded shadow-sm bg-white px-7 py-4 items-center">
       <div className="w-14 flex-none">
-        {picture && (
-          <Image
-            src={picture}
-            alt={profile.handle}
-            width={50}
-            height={50}
-            style={{ width: "auto", height: "auto" }}
-            className="rounded-full"
-          />
-        )}
+        <Image
+          src={getPictureURL(profile)}
+          alt={profile.handle}
+          width={50}
+          height={50}
+          style={{ width: "auto", height: "auto" }}
+          className="rounded-full"
+        />
       </div>
       <div className="w-full ml-7">
         <div className="flex justify-between">
@@ -56,22 +41,12 @@ const ProfileDetails = ({ profile }) => {
             )}
             {attributes.twitter && (
               <a href={`https://twitter.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
-                <Image
-                  src="/twitter.svg"
-                  alt="Twitter"
-                  width={20}
-                  height={20}
-                />
+                <Image src="/twitter.svg" alt="Twitter" width={20} height={20} />
               </a>
             )}
             {attributes.linkedin && (
               <a href={`https://www.linkedin.com/in/${attributes.linkedin}`} target="_blank" rel="noopener noreferrer">
-                <Image
-                  src="/linkedin.svg"
-                  alt="LinkedIn"
-                  width={20}
-                  height={20}
-                />
+                <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
               </a>
             )}
           </div>

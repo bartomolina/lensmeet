@@ -5,6 +5,7 @@ import { WagmiConfig } from "wagmi";
 import { ConnectKitProvider } from "connectkit";
 import wagmiConfig from "../lib/wagmi";
 import { LensProvider } from "@lens-protocol/react-web";
+import { UserProvider } from "../components/user-context";
 import lensConfig from "../lib/lens";
 import Layout from "../components/layout";
 
@@ -17,9 +18,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <WagmiConfig client={wagmiConfig}>
         <ConnectKitProvider theme="auto" mode="light">
           <LensProvider config={lensConfig}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <UserProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </UserProvider>
           </LensProvider>
         </ConnectKitProvider>
       </WagmiConfig>

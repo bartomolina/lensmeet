@@ -1,15 +1,15 @@
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { SignInWithLens, Theme, Size } from "@lens-protocol/widgets-react";
+import { useUser } from "./user-context";
+import { getPictureURL } from "../lib/utils";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 const Layout = ({ children }: LayoutProps) => {
-  async function onSignIn(tokens, profile) {
-    console.log("tokens: ", tokens);
-    console.log("profile: ", profile);
-  }
+  const { profile, authToken, signIn } = useUser();
 
   return (
     <div className="max-w-2xl m-auto text-gray-900 md:px-0 px-4">
@@ -21,7 +21,20 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
             <div className="inline-block px-1 font-semibold text-2xl">SocialPlaza</div>
           </div>
-          <SignInWithLens onSignIn={onSignIn} theme={Theme.lavender} size={Size.small} />
+          {authToken ? (
+            <div className="rounded-3xl flex items-center font-medium px-3 bg-lime-100 text-sm">
+              <Image
+                src={getPictureURL(profile)}
+                alt={profile.handle}
+                width={25}
+                height={25}
+                className="rounded-full mr-3"
+              />
+              {profile.handle}
+            </div>
+          ) : (
+            <SignInWithLens onSignIn={signIn} theme={Theme.lavender} size={Size.small} />
+          )}
         </div>
       </header>
       <main className="py-5">{children}</main>
