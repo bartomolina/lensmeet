@@ -10,6 +10,18 @@ const nextConfig = {
     ]
   },
   transpilePackages: ['@lens-protocol'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lens.infura-ipfs.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.amazonaws.com',
+      },
+    ],
+  },
 }
 
 module.exports = nextConfig
