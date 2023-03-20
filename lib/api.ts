@@ -4,7 +4,7 @@ import { setContext } from "@apollo/client/link/context";
 const APIURL = "https://api.lens.dev";
 
 const authLink = setContext((_, { headers }) => {
-  const token = window.sessionStorage.getItem("lens-auth-token");
+  const token = window.sessionStorage.getItem("lens.accessToken");
   return {
     headers: {
       ...headers,
@@ -17,10 +17,19 @@ const httpLink = createHttpLink({
   uri: APIURL,
 });
 
-export const apolloClient = new ApolloClient({
+export const getClient = () => new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
+
+export const refreshJWT = `
+mutation Refresh($request: RefreshRequest!) {
+  refresh(request: $request) {
+    accessToken
+    refreshToken
+  }
+}
+`;
 
 export const exploreProfiles = `
 query Profiles($profiles: [ProfileId!]) {

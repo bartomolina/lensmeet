@@ -2,16 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import useSWR from "swr";
 import axios from "axios";
-import { apolloClient, exploreProfiles } from "../lib/api";
+import { useActiveProfile, useWalletLogin } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
-import { useUser } from "../components/user-context";
+import { getClient, exploreProfiles } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
+import { useUser } from "../components/user-context";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Home = () => {
   const { data } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
-  const { profile } = useUser();
+  const { data: activeProfile, loading: loadingProfile } = useActiveProfile();
+  const { accessToken } = useUser();
+  const { isPending: loginPending } = useWalletLogin();
   const [profiles, setProfiles] = useState([]);
 
   const lensListsProfiles = useMemo(() => {
@@ -20,6 +23,7 @@ const Home = () => {
 
   useEffect(() => {
     if (lensListsProfiles) {
+      const apolloClient = getClient();
       apolloClient
         .query({
           query: gql(exploreProfiles),
@@ -36,7 +40,7 @@ const Home = () => {
           setProfiles(members ?? []);
         });
     }
-  }, [lensListsProfiles, profile]);
+  }, [lensListsProfiles, accessToken]);
 
   return (
     <>

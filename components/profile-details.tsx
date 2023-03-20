@@ -1,8 +1,13 @@
 import Image from "next/image";
-import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon, GlobeAltIcon, UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
+import { useFollow } from "@lens-protocol/react-web";
+import { useUser } from "../components/user-context";
 import { getPictureURL } from "../lib/utils";
 
 const ProfileDetails = ({ profile }) => {
+  const { profile: currentUser, authToken } = useUser();
+  // const { execute, error, isPending } = useFollow({ profile, profile });
+
   const getProfileAttribute = (attribute: string) => {
     return profile.attributes.filter((attr) => attr.key === attribute).length
       ? profile.attributes.filter((attr) => attr.key === attribute)[0].value
@@ -16,7 +21,7 @@ const ProfileDetails = ({ profile }) => {
   };
 
   return (
-    <li key={profile.id} className="flex border rounded shadow-sm bg-white px-7 py-4 items-center">
+    <li className="flex border rounded shadow-sm bg-white px-7 py-4 items-center">
       <div className="w-14 flex-none">
         <Image
           src={getPictureURL(profile)}
@@ -48,6 +53,28 @@ const ProfileDetails = ({ profile }) => {
               <a href={`https://www.linkedin.com/in/${attributes.linkedin}`} target="_blank" rel="noopener noreferrer">
                 <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
               </a>
+            )}
+            {true && (
+              <>
+                {profile.isFollowedByMe ? (
+                  <a
+                    href={`https://www.linkedin.com/in/${attributes.linkedin}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <UserMinusIcon className="h-5 w-5 text-red-700" />
+                  </a>
+                ) : (
+                  <a
+                    // onClick={execute}
+                    // href={`https://www.linkedin.com/in/${attributes.linkedin}`}
+                    // target="_blank"
+                    // rel="noopener noreferrer"
+                  >
+                    <UserPlusIcon className="h-5 w-5 text-lime-700" />
+                  </a>
+                )}
+              </>
             )}
           </div>
         </div>
