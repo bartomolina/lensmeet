@@ -19,7 +19,7 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="w-10 flex-none">
               <Image src="/CryptoPlaza.png" alt="Crypto Plaza" height={32} width={32} />
             </div>
-            <div className="inline-block px-1 font-semibold text-2xl">SocialPlaza</div>
+            <div className="inline-block px-1 font-semibold text-2xl">LensEvents</div>
           </div>
           {activeProfile ? (
             <button

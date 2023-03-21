@@ -1,4 +1,4 @@
-export const exploreProfiles = `
+export const getMembers = `
 query Profiles($profiles: [ProfileId!]) {
   profiles(request: { profileIds: $profiles, limit: 10 }) {
     items {
@@ -109,3 +109,38 @@ query Profiles($profiles: [ProfileId!]) {
   }
 }
 `;
+
+export const followAll = `
+mutation CreateFollowTypedData {
+  createFollowTypedData(request:{
+    follow: [
+      {
+        profile: "0x01827d"
+      }
+    ]
+  }) {
+    id
+    expiresAt
+    typedData {
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      types {
+        FollowWithSig {
+          name
+          type
+        }
+      }
+      value {
+        nonce
+        deadline
+        profileIds
+        datas
+      }
+    }
+  }
+}
+`

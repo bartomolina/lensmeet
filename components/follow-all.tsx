@@ -1,0 +1,85 @@
+import { ethers, utils } from "ethers";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
+import { gql } from "@apollo/client";
+// @ts-ignore
+import omitDeep from "omit-deep";
+import { followAll } from "../lib/api";
+import LensHubAbi from "../lib/contracts/lens-hub-contract-abi.json";
+
+const LensHubContract = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d";
+
+const omit = (object: any, name: string) => {
+  return omitDeep(object, name);
+};
+
+const splitSignature = (signature: string) => {
+  return utils.splitSignature(signature);
+};
+
+const FollowAll = ({ profiles }) => {
+  const { data: activeProfile } = useActiveProfile();
+  const { mutate } = useApolloClient();
+  const { isConnected } = useAccount();
+  const { connectAsync } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnectAsync } = useDisconnect();
+
+  const handleFollowAll = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (isConnected) {
+      await disconnectAsync();
+    }
+
+    const { connector } = await connectAsync();
+    if (connector instanceof InjectedConnector) {
+      const signer = await connector.getSigner();
+      console.log(signer);
+
+      const typedResult = await mutate({
+        mutation: gql(followAll),
+      });
+
+      console.log("Typed result: ", typedResult);
+      const typedData = typedResult.data.createFollowTypedData.typedData;
+
+      const lensHub = new ethers.Contract(LensHubContract, LensHubAbi, signer);
+      console.log("signing...");
+      console.log(typedData.domain);
+      console.log(typedData.types);
+      console.log(typedData.value);
+      const signature = await await signer._signTypedData(
+        omit(typedData.domain, "__typename"),
+        omit(typedData.types, "__typename"),
+        omit(typedData.value, "__typename")
+      );
+      const { v, r, s } = splitSignature(signature);
+
+      console.log("done signing...");
+      await lensHub.followWithSig({
+        follower: signer._address,
+        profileIds: typedData.value.profileIds,
+        datas: typedData.value.datas,
+        sig: {
+          v,
+          r,
+          s,
+          deadline: typedData.value.deadline,
+        },
+      });
+    }
+  };
+
+  return activeProfile ? (
+    <button onClick={handleFollowAll} className="border rounded-md px-3 py-1 bg-white hover:bg-gray-50 text-sm">
+      Follow all
+    </button>
+  ) : (
+    <></>
+  );
+};
+
+export default FollowAll;

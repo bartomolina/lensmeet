@@ -7,11 +7,11 @@ const FollowButton = ({ profile, from }) => {
   return (
     <>
       {profile.followStatus.isFollowedByMe ? (
-        <button onClick={follow} className="border-2 border-red-700 px-3 py-1">
+        <button onClick={follow} className="border-2 border-red-700 rounded-md px-3 py-1">
           <UserMinusIcon className="h-4 w-4 text-red-700" />
         </button>
       ) : (
-        <button onClick={follow} className="border-2 border-lime-700 px-3 py-1">
+        <button onClick={follow} className="border-2 border-lime-700 rounded-md px-3 py-1">
           <UserPlusIcon className="h-4 w-4 text-lime-700" />
         </button>
       )}
