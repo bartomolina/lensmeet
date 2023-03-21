@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { gql } from "@apollo/client";
 import { useWalletLogin, useWalletLogout } from "@lens-protocol/react-web";
 
 const UserContext = createContext({
