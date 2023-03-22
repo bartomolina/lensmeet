@@ -14,6 +14,8 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const Home = () => {
   const { data } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
   const { data: activeProfile } = useActiveProfile();
+  const [locationFilter, setLocationFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const { query } = useApolloClient();
   const [profiles, setProfiles] = useState([]);
 
@@ -33,15 +35,40 @@ const Home = () => {
         let members = response?.data?.profiles?.items;
         members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
         console.log(members);
-
-        console.log(members.filter((m) => !m.isFollowedByMe && !m.followModule).length);
-        console.log(members.filter((m) => !m.isFollowedByMe && !m.followModule)[1].id);
-        console.log(members.filter((m) => !m.isFollowedByMe && !m.followModule)[1].handle);
-
         setProfiles(members ?? []);
       });
     }
   }, [lensListsProfiles, activeProfile]);
+
+  const filteredProfiles = useMemo(() => {
+    let filtered = profiles;
+    if (searchFilter) {
+      filtered = filtered.filter(
+        (profile) =>
+          profile.name?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          profile.handle.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          profile.bio?.toLowerCase().includes(searchFilter.toLowerCase())
+      );
+    }
+    console.log(locationFilter);
+    console.log(filtered);
+
+    if (locationFilter) {
+      console.log(locationFilter);
+      filtered = filtered.filter(
+        (profile) => profile.attributes?.find((attr) => attr.key === "location")?.value === locationFilter
+      );
+    }
+    return filtered;
+  }, [profiles, searchFilter, locationFilter]);
+
+  const locations = useMemo(() => {
+    let groupedLocations = new Set(
+      profiles.map((profile) => profile.attributes?.find((attr) => attr.key === "location")?.value)
+    );
+    groupedLocations.delete(undefined);
+    return groupedLocations;
+  }, [profiles]);
 
   return (
     <>
@@ -49,76 +76,82 @@ const Home = () => {
         <title>SocialLens</title>
         <meta name="description" content="SocialPlaza" />
       </Head>
-      <div className="space-y-2">
-        <section className="flex justify-between">
-          <div className="flex space-x-2">
-            <div>
-              <label htmlFor="location" className="sr-only">
-                Location
-              </label>
-              <select
-                id="location"
-                name="location"
-                className="rounded-md border px-2 py-1 text-sm"
-                onChange={(event) => setStatusFilter(event.target.value)}
-                value={"Location"}
-              >
-                <option>Location</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="event" className="sr-only">
-                Event
-              </label>
-              <select
-                id="event"
-                name="event"
-                className="rounded-md border px-2 py-1 text-sm"
-                onChange={(event) => setStatusFilter(event.target.value)}
-                value={"Event"}
-              >
-                <option>Event</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="following" className="sr-only">
-                Following
-              </label>
-              <select
-                id="following"
-                name="following"
-                className="rounded-md border px-2 py-1 text-sm"
-                onChange={(event) => setStatusFilter(event.target.value)}
-                value={"All"}
-              >
-                <option>All</option>
-                <option>Following</option>
-                <option>Not following</option>
-              </select>
-            </div>
-            <FollowAll profiles={profiles} />
-          </div>
+      <div className="space-y-4">
+        <section className="space-y-3">
           <div>
-            <label htmlFor="search" className="sr-only">
-              Search
-            </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <FollowAll profiles={filteredProfiles} />
+          </div>
+          <div className="flex justify-between">
+            <div className="flex space-x-2">
+              <div>
+                <label htmlFor="location" className="sr-only">
+                  Location
+                </label>
+                <select
+                  id="location"
+                  name="location"
+                  className="rounded-md border px-2 py-1 text-sm"
+                  onChange={(event) => setLocationFilter(event.target.value)}
+                  value={locationFilter}
+                >
+                  <option value="">Location</option>
+                  {locations &&
+                    [...Array.from(locations)].map((location) => <option key={location}>{location}</option>)}
+                </select>
               </div>
-              <input
-                type="text"
-                id="search"
-                name="search"
-                className="rounded-md border py-1 pr-2 pl-10 text-sm"
-                onChange={(event) => setSearchFilter(event.target.value)}
-                value={""}
-              />
+              <div>
+                <label htmlFor="event" className="sr-only">
+                  Event
+                </label>
+                <select
+                  id="event"
+                  name="event"
+                  className="rounded-md border px-2 py-1 text-sm"
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  value={"Event"}
+                >
+                  <option>Event</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="following" className="sr-only">
+                  Following
+                </label>
+                <select
+                  id="following"
+                  name="following"
+                  className="rounded-md border px-2 py-1 text-sm"
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  value={"All"}
+                >
+                  <option>All</option>
+                  <option>Following</option>
+                  <option>Not following</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="search" className="sr-only">
+                Search
+              </label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
+                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </div>
+                <input
+                  type="text"
+                  id="search"
+                  name="search"
+                  className="rounded-md border py-1 pr-2 pl-8 text-sm"
+                  onChange={(event) => setSearchFilter(event.target.value)}
+                  value={searchFilter}
+                />
+              </div>
             </div>
           </div>
         </section>
         <section>
-          <ProfilesList profiles={profiles} />
+          <ProfilesList profiles={filteredProfiles} />
         </section>
       </div>
     </>

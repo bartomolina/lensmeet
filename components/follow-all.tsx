@@ -74,7 +74,10 @@ const FollowAll = ({ profiles }) => {
   };
 
   return activeProfile ? (
-    <button onClick={handleFollowAll} className="border rounded-md px-3 py-1 bg-white hover:bg-gray-50 text-sm">
+    <button
+      onClick={handleFollowAll}
+      className="border rounded-md px-3 py-1 text-white text-sm bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br"
+    >
       Follow all
     </button>
   ) : (

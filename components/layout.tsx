@@ -65,7 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
           )}
         </div>
       </header>
-      <main className="py-5">{children}</main>
+      <main className="py-4">{children}</main>
     </div>
   );
 };
