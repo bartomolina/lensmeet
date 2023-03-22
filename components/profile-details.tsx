@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { MapPinIcon, GlobeAltIcon, UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
-import { useProfile, useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
+import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/solid";
+import { useProfile, useActiveProfile } from "@lens-protocol/react-web";
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
 

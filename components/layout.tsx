@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Menu } from "@headlessui/react";
 import { useActiveProfile } from "@lens-protocol/react-web";
@@ -16,12 +17,12 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="max-w-2xl m-auto text-gray-900 md:px-0 px-4">
       <header className="border-b">
         <div className="flex mt-4 mb-2 py-1.5 justify-between">
-          <div className="flex">
+          <Link href={"/"} className="flex">
             <div className="w-10 flex-none">
               <Image src="/CryptoPlaza.png" alt="Crypto Plaza" height={32} width={32} />
             </div>
             <div className="inline-block px-1 font-semibold text-2xl">LensEvents</div>
-          </div>
+          </Link>
           {activeProfile ? (
             <Menu as="div" className="relative text-lime-900 text-xs">
               <Menu.Button className="flex items-center rounded-md cursor-pointer bg-lime-300 py-1 px-2 space-x-1">
@@ -36,12 +37,12 @@ const Layout = ({ children }: LayoutProps) => {
               </Menu.Button>
               <Menu.Items className="absolute w-full space-y-1 p-1.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
                 <Menu.Item>
-                  <div className="w-full p-1.5 text-end hover:cursor-pointer hover:bg-lime-300 rounded-md">
+                  <Link href={"/profile"} className="block w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 rounded-md">
                     Profile
-                  </div>
+                  </Link>
                 </Menu.Item>
                 <Menu.Item>
-                  <div className="w-full p-1.5 text-end hover:cursor-pointer hover:bg-lime-300 rounded-md" onClick={signOut}>
+                  <div className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 rounded-md" onClick={signOut}>
                     Disconnect
                   </div>
                 </Menu.Item>
