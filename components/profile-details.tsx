@@ -1,17 +1,12 @@
 import Image from "next/image";
 import { MapPinIcon, GlobeAltIcon, UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
-import { useProfile, useActiveProfile } from "@lens-protocol/react-web";
+import { useProfile, useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
 
-const ProfileDetails = ({ id, activeProfile: test }) => {
+const ProfileDetails = ({ id }) => {
   const { data: activeProfile } = useActiveProfile();
-  const { data: profile, loading } = useProfile({ profileId: id, observerId: activeProfile?.id });
-
-  console.log("Loading... ", loading);
-  console.log("Profile ID... ", id);
-  console.log("Active Profile ID... ", activeProfile?.id);
-  console.log("Active Profile ", profile);
+  const { data: profile, loading } = useProfile({ profileId: id });
 
   let attributes = {};
   if (profile && !loading) {

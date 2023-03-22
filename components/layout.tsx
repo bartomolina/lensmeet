@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Menu } from "@headlessui/react";
 import { useActiveProfile } from "@lens-protocol/react-web";
 import { useUser } from "./user-context";
 import { getPictureURL } from "../lib/utils";
@@ -22,19 +23,30 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="inline-block px-1 font-semibold text-2xl">LensEvents</div>
           </div>
           {activeProfile ? (
-            <button
-              className="flex items-center rounded-md cursor-pointer bg-lime-300 py-1 px-2 text-lime-900 text-xs space-x-1"
-              onClick={signOut}
-            >
-              <Image
-                src={getPictureURL(activeProfile)}
-                alt={activeProfile.handle}
-                width={25}
-                height={25}
-                className="rounded-full mr-3"
-              />
-              {activeProfile.handle}
-            </button>
+            <Menu as="div" className="relative text-lime-900 text-xs">
+              <Menu.Button className="flex items-center rounded-md cursor-pointer bg-lime-300 py-1 px-2 space-x-1">
+                <Image
+                  src={getPictureURL(activeProfile)}
+                  alt={activeProfile.handle}
+                  width={25}
+                  height={25}
+                  className="rounded-full mr-3"
+                />
+                {activeProfile.handle}
+              </Menu.Button>
+              <Menu.Items className="absolute w-full space-y-1 p-1.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
+                <Menu.Item>
+                  <div className="w-full p-1.5 text-end hover:cursor-pointer hover:bg-lime-300 rounded-md">
+                    Profile
+                  </div>
+                </Menu.Item>
+                <Menu.Item>
+                  <div className="w-full p-1.5 text-end hover:cursor-pointer hover:bg-lime-300 rounded-md" onClick={signOut}>
+                    Disconnect
+                  </div>
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
           ) : (
             <button
               className="flex items-center rounded-md cursor-pointer bg-lime-500 p-2 text-lime-50 text-xs space-x-1"

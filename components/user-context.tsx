@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { useWalletLogin, useWalletLogout } from "@lens-protocol/react-web";
+import { useWalletLogin, useWalletLogout, useApolloClient } from "@lens-protocol/react-web";
 
 const UserContext = createContext({
   signIn: () => {},
@@ -18,6 +18,7 @@ export const UserProvider = ({ children }: React.PropsWithChildren) => {
     connector: new InjectedConnector(),
   });
   const { disconnectAsync } = useDisconnect();
+  const { cache } = useApolloClient();
 
   const signIn = async () => {
     if (isConnected) {
@@ -29,11 +30,13 @@ export const UserProvider = ({ children }: React.PropsWithChildren) => {
     if (connector instanceof InjectedConnector) {
       const signer = await connector.getSigner();
       await login(signer);
+      await cache.reset();
     }
   };
 
   const signOut = async () => {
     await logout();
+    await cache.reset();
   };
 
   return <UserContext.Provider value={{ signIn, signOut }}>{children}</UserContext.Provider>;

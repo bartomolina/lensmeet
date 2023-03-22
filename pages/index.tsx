@@ -31,7 +31,7 @@ const Home = () => {
         fetchPolicy: "no-cache",
         variables: {
           // profiles: lensListsProfiles,
-          profiles: ["0x01a8d6"]
+          profiles: ["0x01a8d6"],
         },
       }).then((response) => {
         let members = response?.data?.profiles?.items;
@@ -84,7 +84,9 @@ const Home = () => {
         <section className="space-y-3">
           <div>
             <FollowAll profiles={filteredProfiles} />
-            <span className="text-sm ml-3 italic">Showing <strong>{filteredProfiles.length}</strong> member(s)</span>
+            <span className="text-sm ml-3 italic">
+              Showing <strong>{filteredProfiles.length}</strong> member(s)
+            </span>
           </div>
           <div className="flex justify-between">
             <div className="flex space-x-2">
@@ -156,7 +158,7 @@ const Home = () => {
           </div>
         </section>
         <section>
-          <ProfilesList profiles={filteredProfiles} activeProfile={activeProfile} />
+          <ProfilesList profiles={filteredProfiles} />
         </section>
       </div>
     </>
