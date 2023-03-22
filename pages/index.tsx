@@ -14,8 +14,9 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const Home = () => {
   const { data } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
   const { data: activeProfile } = useActiveProfile();
-  const [locationFilter, setLocationFilter] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [followingFilter, setFollowingFilter] = useState("");
   const { query } = useApolloClient();
   const [profiles, setProfiles] = useState([]);
 
@@ -29,12 +30,13 @@ const Home = () => {
         query: gql(getMembers),
         fetchPolicy: "no-cache",
         variables: {
-          profiles: lensListsProfiles,
+          // profiles: lensListsProfiles,
+          profiles: ["0x01a8d6"]
         },
       }).then((response) => {
         let members = response?.data?.profiles?.items;
         members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
-        console.log(members);
+        console.log("Members... ", members);
         setProfiles(members ?? []);
       });
     }
@@ -50,17 +52,19 @@ const Home = () => {
           profile.bio?.toLowerCase().includes(searchFilter.toLowerCase())
       );
     }
-    console.log(locationFilter);
-    console.log(filtered);
 
     if (locationFilter) {
-      console.log(locationFilter);
       filtered = filtered.filter(
         (profile) => profile.attributes?.find((attr) => attr.key === "location")?.value === locationFilter
       );
     }
+
+    if (followingFilter) {
+      const following = followingFilter === "Following";
+      filtered = filtered.filter((profile) => profile.isFollowedByMe === following);
+    }
     return filtered;
-  }, [profiles, searchFilter, locationFilter]);
+  }, [profiles, searchFilter, locationFilter, followingFilter]);
 
   const locations = useMemo(() => {
     let groupedLocations = new Set(
@@ -73,13 +77,14 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>SocialLens</title>
-        <meta name="description" content="SocialPlaza" />
+        <title>LensEvents</title>
+        <meta name="description" content="LensEvents" />
       </Head>
       <div className="space-y-4">
         <section className="space-y-3">
           <div>
             <FollowAll profiles={filteredProfiles} />
+            <span className="text-sm ml-3 italic">Showing <strong>{filteredProfiles.length}</strong> member(s)</span>
           </div>
           <div className="flex justify-between">
             <div className="flex space-x-2">
@@ -121,10 +126,10 @@ const Home = () => {
                   id="following"
                   name="following"
                   className="rounded-md border px-2 py-1 text-sm"
-                  onChange={(event) => setStatusFilter(event.target.value)}
-                  value={"All"}
+                  onChange={(event) => setFollowingFilter(event.target.value)}
+                  value={followingFilter}
                 >
-                  <option>All</option>
+                  <option value="">All</option>
                   <option>Following</option>
                   <option>Not following</option>
                 </select>
@@ -151,7 +156,7 @@ const Home = () => {
           </div>
         </section>
         <section>
-          <ProfilesList profiles={filteredProfiles} />
+          <ProfilesList profiles={filteredProfiles} activeProfile={activeProfile} />
         </section>
       </div>
     </>

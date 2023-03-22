@@ -37,28 +37,20 @@ const FollowAll = ({ profiles }) => {
     const { connector } = await connectAsync();
     if (connector instanceof InjectedConnector) {
       const signer = await connector.getSigner();
-      console.log(signer);
 
       const typedResult = await mutate({
         mutation: gql(followAll),
       });
 
-      console.log("Typed result: ", typedResult);
       const typedData = typedResult.data.createFollowTypedData.typedData;
-
       const lensHub = new ethers.Contract(LensHubContract, LensHubAbi, signer);
-      console.log("signing...");
-      console.log(typedData.domain);
-      console.log(typedData.types);
-      console.log(typedData.value);
       const signature = await await signer._signTypedData(
         omit(typedData.domain, "__typename"),
         omit(typedData.types, "__typename"),
         omit(typedData.value, "__typename")
       );
       const { v, r, s } = splitSignature(signature);
-
-      console.log("done signing...");
+      
       await lensHub.followWithSig({
         follower: signer._address,
         profileIds: typedData.value.profileIds,
