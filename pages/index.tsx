@@ -30,8 +30,8 @@ const Home = () => {
         query: gql(getMembers),
         fetchPolicy: "no-cache",
         variables: {
-          // profiles: lensListsProfiles,
-          profiles: ["0x01a8d6"],
+          profiles: lensListsProfiles,
+          // profiles: ["0x01a8d6"],
         },
       }).then((response) => {
         let members = response?.data?.profiles?.items;

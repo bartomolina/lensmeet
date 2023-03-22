@@ -1,37 +1,71 @@
 import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { useActiveProfile, useUpdateProfileDetails } from "@lens-protocol/react-web";
-import { getPictureURL } from "../lib/utils";
+import { getPictureURL, upload } from "../lib/utils";
 
 const Profile = () => {
   const { data: profile, loading } = useActiveProfile();
-  const { execute, error, isPending } = useUpdateProfileDetails({ profile, upload });
-  const [formData, setFormData] = useState({});
+  const { execute: update, error, isPending } = useUpdateProfileDetails({ profile, upload });
+  const [formData, setFormData] = useState({
+    name: "",
+    bio: "",
+    attributes: {
+      location: "",
+      website: "",
+      twitter: "",
+      instagram: "",
+      github: "",
+      linkedin: "",
+    },
+  });
 
   useEffect(() => {
     if (profile && !loading) {
       console.log(profile);
       const getProfileAttribute = (attribute: string) => {
-        return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;
+        return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
       };
       setFormData({
-        location: getProfileAttribute("location"),
-        website: getProfileAttribute("website"),
-        twitter: getProfileAttribute("twitter"),
-        linkedin: getProfileAttribute("linkedin"),
+        ...formData,
+        attributes: {
+          location: getProfileAttribute("location"),
+          website: getProfileAttribute("website"),
+          twitter: getProfileAttribute("twitter"),
+          instagram: getProfileAttribute("instagram"),
+          github: getProfileAttribute("github"),
+          linkedin: getProfileAttribute("linkedin"),
+        },
       });
     }
   }, [profile, loading]);
 
-  const handleFormChange = (event: FormEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [event.currentTarget.id]: event.currentTarget.value,
-    });
+  const handleFormChange = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log(event.currentTarget.id);
+    event.currentTarget.id === "name" || event.currentTarget.id === "bio"
+      ? setFormData({
+          ...formData,
+          [event.currentTarget.id]: event.currentTarget.value,
+        })
+      : setFormData({
+          ...formData,
+          attributes: {
+            ...formData.attributes,
+            [event.currentTarget.id]: event.currentTarget.value,
+          },
+        });
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    console.log("Uploading data");
+    console.log(profile.name, " - ", profile.bio, " - ", profile.coverPicture);
+    const result = await update({
+      name: formData.name,
+      bio: formData.bio,
+      coverPicture: profile?.coverPicture,
+      attributes: formData.attributes,
+    });
+    console.log("Uploaded data: ", result);
   };
 
   return (
@@ -39,7 +73,7 @@ const Profile = () => {
       {profile && !loading && (
         <div className="border rounded shadow-sm bg-white">
           <div
-            className="inline-block min-h-max h-32 w-full bg-purple-300"
+            className="inline-block min-h-max h-36 w-full bg-purple-300"
             style={{
               backgroundImage: `url("/bg.svg")`,
             }}
@@ -60,19 +94,64 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            <div className="pt-8 px-8 col-span-3 w-full">
+            <div className="pt-6 px-8 col-span-3 w-full">
               <form className="space-y-7 divide-y" onSubmit={handleSubmit}>
-                <div className="space-y-5">
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
+                      Name
+                    </label>
+                    <div className="mt-1 flex rounded-md shadow-sm">
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={formData.name}
+                        onChange={handleFormChange}
+                        className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="bio" className="block text-sm font-medium leading-6 text-gray-900">
+                      Bio
+                    </label>
+                    <div className="mt-1 flex rounded-md shadow-sm">
+                      <textarea
+                        rows={4}
+                        name="bio"
+                        id="bio"
+                        value={formData.bio}
+                        onChange={handleFormChange}
+                        className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label htmlFor="location" className="block text-sm font-medium leading-6 text-gray-900">
                       Location
                     </label>
-                    <div className="mt-2 flex rounded-md shadow-sm">
+                    <div className="mt-1 flex rounded-md shadow-sm">
                       <input
                         type="text"
                         name="location"
                         id="location"
-                        value={formData.location}
+                        value={formData.attributes.location}
+                        onChange={handleFormChange}
+                        className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="website" className="block text-sm font-medium leading-6 text-gray-900">
+                      Website
+                    </label>
+                    <div className="mt-1 flex rounded-md shadow-sm">
+                      <input
+                        type="text"
+                        name="website"
+                        id="website"
+                        value={formData.attributes.website}
                         onChange={handleFormChange}
                         className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
                       />
@@ -90,7 +169,61 @@ const Profile = () => {
                         type="text"
                         name="twitter"
                         id="twitter"
-                        value={formData.twitter}
+                        value={formData.attributes.twitter}
+                        onChange={handleFormChange}
+                        className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="instagram" className="text-sm font-medium">
+                      Instagram
+                    </label>
+                    <div className="mt-1 flex shadow-sm">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 px-3 text-sm border-gray-300 text-gray-500">
+                        instagram.com/
+                      </span>
+                      <input
+                        type="text"
+                        name="instagram"
+                        id="instagram"
+                        value={formData.attributes.instagram}
+                        onChange={handleFormChange}
+                        className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="github" className="text-sm font-medium">
+                      GitHub
+                    </label>
+                    <div className="mt-1 flex shadow-sm">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 px-3 text-sm border-gray-300 text-gray-500">
+                        github.com/
+                      </span>
+                      <input
+                        type="text"
+                        name="github"
+                        id="github"
+                        value={formData.attributes.github}
+                        onChange={handleFormChange}
+                        className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="linkedin" className="text-sm font-medium">
+                      LinkedIn
+                    </label>
+                    <div className="mt-1 flex shadow-sm">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 px-3 text-sm border-gray-300 text-gray-500">
+                        linkedin.com/in/
+                      </span>
+                      <input
+                        type="text"
+                        name="linkedin"
+                        id="linkedin"
+                        value={formData.attributes.linkedin}
                         onChange={handleFormChange}
                         className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
                       />

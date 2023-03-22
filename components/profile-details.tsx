@@ -11,12 +11,14 @@ const ProfileDetails = ({ id }) => {
   let attributes = {};
   if (profile && !loading) {
     const getProfileAttribute = (attribute: string) => {
-      return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;
+      return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
     };
     attributes = {
       location: getProfileAttribute("location"),
       website: getProfileAttribute("website"),
       twitter: getProfileAttribute("twitter"),
+      instagram: getProfileAttribute("instagram"),
+      github: getProfileAttribute("github"),
       linkedin: getProfileAttribute("linkedin"),
     };
   }
@@ -52,7 +54,12 @@ const ProfileDetails = ({ id }) => {
               )}
             </div>
           </div>
-          {(attributes.website || attributes.website || attributes.website || activeProfile) && (
+          {(attributes.website ||
+            attributes.twitter ||
+            attributes.instagram ||
+            attributes.github ||
+            attributes.linkedin ||
+            activeProfile) && (
             <div className="flex justify-end items-center space-x-5 py-3 pr-4 text-gray-600">
               <div className="flex space-x-2.5">
                 {attributes.website && (
@@ -63,6 +70,16 @@ const ProfileDetails = ({ id }) => {
                 {attributes.twitter && (
                   <a href={`https://twitter.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
                     <Image src="/twitter.svg" alt="Twitter" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.instagram && (
+                  <a href={`https://instagram.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/instagram.svg" alt="Instagram" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.github && (
+                  <a href={`https://github.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/github.svg" alt="GitHub" width={20} height={20} />
                   </a>
                 )}
                 {attributes.linkedin && (
