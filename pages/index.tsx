@@ -45,7 +45,7 @@ const Home = () => {
   }, [lensListsProfiles, activeProfile]);
 
   const filteredProfiles = useMemo(() => {
-    let filtered = profiles;
+    let filtered = profiles.slice(0,1);
     if (searchFilter) {
       filtered = filtered.filter(
         (profile: ProfileFragment) =>
