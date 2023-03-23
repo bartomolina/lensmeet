@@ -1,3 +1,4 @@
+import { FormEvent } from "react";
 import { ethers, utils } from "ethers";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -18,7 +19,11 @@ const splitSignature = (signature: string) => {
   return utils.splitSignature(signature);
 };
 
-const FollowAll = ({ profiles }) => {
+type Props = {
+  profiles: string[];
+};
+
+const FollowAll = ({ profiles }: Props) => {
   const { data: activeProfile } = useActiveProfile();
   const { mutate } = useApolloClient();
   const { isConnected } = useAccount();
@@ -42,6 +47,7 @@ const FollowAll = ({ profiles }) => {
         mutation: gql(followAll),
       });
 
+      // @ts-ignore
       const typedData = typedResult.data.createFollowTypedData.typedData;
       const lensHub = new ethers.Contract(LensHubContract, LensHubAbi, signer);
       const signature = await await signer._signTypedData(
@@ -50,7 +56,7 @@ const FollowAll = ({ profiles }) => {
         omit(typedData.value, "__typename")
       );
       const { v, r, s } = splitSignature(signature);
-      
+
       await lensHub.followWithSig({
         follower: signer._address,
         profileIds: typedData.value.profileIds,

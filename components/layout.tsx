@@ -37,12 +37,12 @@ const Layout = ({ children }: LayoutProps) => {
               </Menu.Button>
               <Menu.Items className="absolute w-full space-y-1 p-1.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
                 <Menu.Item>
-                  <Link href={"/profile"} className="block w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 rounded-md">
+                  <Link href={"/profile"} className="block w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md">
                     Profile
                   </Link>
                 </Menu.Item>
                 <Menu.Item>
-                  <div className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 rounded-md" onClick={signOut}>
+                  <div className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md" onClick={signOut}>
                     Disconnect
                   </div>
                 </Menu.Item>

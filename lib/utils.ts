@@ -1,7 +1,9 @@
+// @ts-nocheck
+import { ProfileFragment } from "@lens-protocol/react";
 import { WebBundlr } from "@bundlr-network/client";
 import { fetchSigner } from "wagmi/actions";
 
-export const getPictureURL = (profile) => {
+export const getPictureURL = (profile: ProfileFragment) => {
   let picture = "/lens.jpeg";
   if (profile.picture) {
     if (profile.picture.original && profile.picture.original.url) {
@@ -19,31 +21,36 @@ export const getPictureURL = (profile) => {
   return picture;
 };
 
-const TOP_UP = '200000000000000000'; // 0.2 MATIC
+const TOP_UP = "200000000000000000"; // 0.2 MATIC
 const MIN_FUNDS = 0.05;
 
-export const upload = async (data) => {
-	const signer = await fetchSigner();
-	const provider = signer?.provider;
-	// use method injection to add the missing function
-	provider.getSigner = () => signer;
-	// create a WebBundlr object
-	const bundlr = new WebBundlr("https://node1.bundlr.network", "matic", provider);
+export const upload = async (data: any) => {
+  const signer = await fetchSigner();
+  const provider = signer?.provider;
+  // use method injection to add the missing function
+  provider.getSigner = () => signer;
+  // create a WebBundlr object
+  const bundlr = new WebBundlr("https://node1.bundlr.network", "matic", provider);
 
-	await bundlr.ready();
+  await bundlr.ready();
 
-  const balance = await bundlr.getBalance((await signer?.getAddress()));
+  const address = await signer?.getAddress();
+  let url = "";
+  if (address) {
+    const balance = await bundlr.getBalance(address);
 
-  if (bundlr.utils.unitConverter(balance).toNumber() < MIN_FUNDS) {
-    await bundlr.fund(TOP_UP);
+    if (bundlr.utils.unitConverter(balance).toNumber() < MIN_FUNDS) {
+      await bundlr.fund(TOP_UP);
+    }
+
+    const serialized = JSON.stringify(data);
+    const tx = await bundlr.upload(serialized, {
+      tags: [{ name: "Content-Type", value: "application/json" }],
+    });
+
+    console.log(`Upload success content URI= https://arweave.net/${tx.id}`);
+
+    url = `https://arweave.net/${tx.id}`;
   }
-
-	const serialized = JSON.stringify(data);
-	const tx = await bundlr.upload(serialized, {
-		tags: [{ name: "Content-Type", value: "application/json" }],
-	});
-
-	console.log(`Upload success content URI= https://arweave.net/${tx.id}`);
-
-	return `https://arweave.net/${tx.id}`;
+  return url;
 };

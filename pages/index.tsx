@@ -3,7 +3,7 @@ import Head from "next/head";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import useSWR from "swr";
 import axios from "axios";
-import { useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
+import { useActiveProfile, useApolloClient, ProfileFragment } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { getMembers } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
@@ -17,10 +17,12 @@ const Home = () => {
   const [searchFilter, setSearchFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [followingFilter, setFollowingFilter] = useState("");
+  const [eventFilter, setEventFilter] = useState("");
   const { query } = useApolloClient();
   const [profiles, setProfiles] = useState([]);
 
   const lensListsProfiles = useMemo(() => {
+    // @ts-ignore
     return data?.data.members.items.map((p) => p.profileId);
   }, [data]);
 
@@ -31,9 +33,9 @@ const Home = () => {
         fetchPolicy: "no-cache",
         variables: {
           profiles: lensListsProfiles,
-          // profiles: ["0x01a8d6"],
         },
       }).then((response) => {
+        // @ts-ignore
         let members = response?.data?.profiles?.items;
         members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
         console.log("Members... ", members);
@@ -46,7 +48,7 @@ const Home = () => {
     let filtered = profiles;
     if (searchFilter) {
       filtered = filtered.filter(
-        (profile) =>
+        (profile: ProfileFragment) =>
           profile.name?.toLowerCase().includes(searchFilter.toLowerCase()) ||
           profile.handle.toLowerCase().includes(searchFilter.toLowerCase()) ||
           profile.bio?.toLowerCase().includes(searchFilter.toLowerCase())
@@ -55,12 +57,14 @@ const Home = () => {
 
     if (locationFilter) {
       filtered = filtered.filter(
+        // @ts-ignore
         (profile) => profile.attributes?.find((attr) => attr.key === "location")?.value === locationFilter
       );
     }
 
     if (followingFilter) {
       const following = followingFilter === "Following";
+      // @ts-ignore
       filtered = filtered.filter((profile) => profile.isFollowedByMe === following);
     }
     return filtered;
@@ -68,6 +72,7 @@ const Home = () => {
 
   const locations = useMemo(() => {
     let groupedLocations = new Set(
+      // @ts-ignore
       profiles.map((profile) => profile.attributes?.find((attr) => attr.key === "location")?.value)
     );
     groupedLocations.delete(undefined);
@@ -114,8 +119,8 @@ const Home = () => {
                   id="event"
                   name="event"
                   className="rounded-md border px-2 py-1 text-sm"
-                  onChange={(event) => setStatusFilter(event.target.value)}
-                  value={"Event"}
+                  onChange={(event) => setEventFilter(event.target.value)}
+                  value={eventFilter}
                 >
                   <option>Event</option>
                 </select>

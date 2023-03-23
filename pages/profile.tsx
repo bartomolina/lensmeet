@@ -1,10 +1,11 @@
 import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
-import { useActiveProfile, useUpdateProfileDetails } from "@lens-protocol/react-web";
+import { useActiveProfile, useUpdateProfileDetails, ProfileOwnedByMeFragment } from "@lens-protocol/react-web";
 import { getPictureURL, upload } from "../lib/utils";
 
 const Profile = () => {
   const { data: profile, loading } = useActiveProfile();
+  // @ts-ignore
   const { execute: update, error, isPending } = useUpdateProfileDetails({ profile, upload });
   const [formData, setFormData] = useState({
     name: "",
@@ -23,10 +24,12 @@ const Profile = () => {
     if (profile && !loading) {
       console.log(profile);
       const getProfileAttribute = (attribute: string) => {
+        // @ts-ignore
         return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
       };
       setFormData({
-        ...formData,
+        name: profile.name ?? "",
+        bio: profile.bio ?? "",
         attributes: {
           location: getProfileAttribute("location"),
           website: getProfileAttribute("website"),
@@ -57,15 +60,13 @@ const Profile = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    console.log("Uploading data");
-    console.log(profile.name, " - ", profile.bio, " - ", profile.coverPicture);
     const result = await update({
       name: formData.name,
       bio: formData.bio,
+      // @ts-ignore
       coverPicture: profile?.coverPicture,
       attributes: formData.attributes,
     });
-    console.log("Uploaded data: ", result);
   };
 
   return (

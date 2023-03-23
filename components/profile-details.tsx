@@ -4,13 +4,25 @@ import { useProfile, useActiveProfile } from "@lens-protocol/react-web";
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
 
-const ProfileDetails = ({ id }) => {
+type Props = {
+  id: string;
+};
+
+const ProfileDetails = ({ id }: Props) => {
   const { data: activeProfile } = useActiveProfile();
   const { data: profile, loading } = useProfile({ profileId: id });
 
-  let attributes = {};
+  let attributes = {
+    location: "",
+    website: "",
+    twitter: "",
+    instagram: "",
+    github: "",
+    linkedin: "",
+  };
   if (profile && !loading) {
     const getProfileAttribute = (attribute: string) => {
+      // @ts-ignore
       return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
     };
     attributes = {
@@ -26,8 +38,13 @@ const ProfileDetails = ({ id }) => {
   return (
     <>
       {profile && !loading && (
-        <li className="border rounded shadow-sm bg-white divide-y">
-          <div className="flex items-center px-7 py-4">
+        <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
+          <a
+            href={`https://lenster.xyz/u/${profile.handle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center px-7 py-4"
+          >
             <div className="w-14 flex-none">
               <Image
                 src={getPictureURL(profile)}
@@ -53,7 +70,7 @@ const ProfileDetails = ({ id }) => {
                 </p>
               )}
             </div>
-          </div>
+          </a>
           {(attributes.website ||
             attributes.twitter ||
             attributes.instagram ||
