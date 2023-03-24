@@ -61,24 +61,26 @@ type Props = {
 
 const ProfilesList = ({ events }: Props) => {
   const groupedByMonth = groupByMonth(events);
-  console.log(groupedByMonth);
 
   return (
-    <>
-      {groupedByMonth.map((year) => (
-        <div key={year.year}>
-          <h2 className="w-full text-end text-2xl">{year.year}</h2>
-          {year.months.map((month) => (
-            <div key={month.month}>
-              <h3 className="text-xl font-light mt-3 mb-1">{monthNames[month.month]}</h3>
-              <ul className="space-y-4">
-                {month.events && month.events.map((_event) => <EventDetails key={_event.id} _event={_event} />)}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ))}
-    </>
+    <ul className="space-y-4">
+      {events && events.map((_event) => <EventDetails key={_event.id} _event={_event} />)}
+    </ul>
+    // <>
+    //   {groupedByMonth.map((year) => (
+    //     <div key={year.year}>
+    //       <h2 className="w-full text-end p-2 text-2xl text-gray-600">{year.year}</h2>
+    //       {year.months.map((month) => (
+    //         <div key={month.month}>
+    //           <h3 className="text-xl font-medium p-2 mt-2">{monthNames[month.month]}</h3>
+    //           <ul className="space-y-4">
+    //             {month.events && month.events.map((_event) => <EventDetails key={_event.id} _event={_event} />)}
+    //           </ul>
+    //         </div>
+    //       ))}
+    //     </div>
+    //   ))}
+    // </>
   );
 };
 

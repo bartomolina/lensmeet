@@ -32,7 +32,6 @@ const Home = () => {
   }, [data]);
 
   useEffect(() => {
-    console.log(lensListsProfiles);
     if (lensListsProfiles) {
       query({
         query: gql(getMembers),

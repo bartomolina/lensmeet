@@ -23,7 +23,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (profile && !loading) {
-      console.log(profile);
       const getProfileAttribute = (attribute: string) => {
         // @ts-ignore
         return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;

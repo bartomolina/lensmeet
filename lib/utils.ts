@@ -51,9 +51,8 @@ export const upload = async (data: any) => {
       tags: [{ name: "Content-Type", value: "application/json" }],
     });
 
-    console.log(`Upload success content URI= https://arweave.net/${tx.id}`);
-
     url = `https://arweave.net/${tx.id}`;
+    console.log(`Upload success content URI=${url}`);
   }
   return url;
 };

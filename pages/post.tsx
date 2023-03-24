@@ -38,8 +38,6 @@ const PostEvent = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    console.log("Sending request...", formData);
-
     const result = await create({
       content: formData.description,
       contentFocus: ContentFocus.TEXT,
@@ -80,7 +78,6 @@ const PostEvent = () => {
         followersOnly: true,
       },
     });
-    console.log(result);
   };
 
   return (

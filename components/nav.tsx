@@ -10,7 +10,6 @@ import { getPictureURL } from "../lib/utils";
 const navigation = [
   { name: "Members", href: "/" },
   { name: "Events", href: "/events" },
-  { name: "Post", href: "/post" },
 ];
 
 const Nav = () => {

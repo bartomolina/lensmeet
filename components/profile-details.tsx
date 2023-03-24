@@ -74,7 +74,7 @@ const ProfileDetails = ({ id }: Props) => {
             attributes.github ||
             attributes.linkedin ||
             activeProfile) && (
-            <div className="flex justify-end items-center space-x-5 py-3 pr-4 text-gray-600">
+            <div className="flex justify-end items-center space-x-5 py-3 px-4 text-gray-600">
               <div className="flex space-x-2.5">
                 {attributes.website && (
                   <a href={attributes.website} target="_blank" rel="noopener noreferrer">
