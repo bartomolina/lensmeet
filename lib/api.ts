@@ -1,6 +1,14 @@
+let prod = true;
+if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
+  prod = false;
+}
+
+const getMembersQueryType = prod ? "ProfileId" : "Handle";
+const getMembersVariable = prod ? "profileIds" : "handles";
+
 export const getMembers = `
-query Profiles($profiles: [ProfileId!]) {
-  profiles(request: { profileIds: $profiles, limit: 10 }) {
+query Profiles($profiles: [${getMembersQueryType}!]) {
+  profiles(request: { ${getMembersVariable}: $profiles, limit: 10 }) {
     items {
       id
       name

@@ -22,12 +22,19 @@ const Home = () => {
   const [profiles, setProfiles] = useState([]);
 
   const lensListsProfiles = useMemo(() => {
+    let prod = true;
+    if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
+      prod = false;
+    }
+    const stagingProfiles = ["bartomolina.test", "bartomolina1.test", "bartomolina2.test"];
     // @ts-ignore
-    return data?.data.members.items.map((p) => p.profileId);
+    return prod ? data?.data.members.items.map((p) => p.profileId) : stagingProfiles;
   }, [data]);
 
   useEffect(() => {
+    console.log(lensListsProfiles);
     if (lensListsProfiles) {
+      console.log("Querying...");
       query({
         query: gql(getMembers),
         fetchPolicy: "no-cache",
@@ -35,6 +42,7 @@ const Home = () => {
           profiles: lensListsProfiles,
         },
       }).then((response) => {
+        console.log("Done querying...");
         // @ts-ignore
         let members = response?.data?.profiles?.items;
         members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
@@ -45,7 +53,7 @@ const Home = () => {
   }, [lensListsProfiles, activeProfile]);
 
   const filteredProfiles = useMemo(() => {
-    let filtered = profiles.slice(0,1);
+    let filtered = profiles;
     if (searchFilter) {
       filtered = filtered.filter(
         (profile: ProfileFragment) =>
