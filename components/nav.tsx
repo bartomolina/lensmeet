@@ -10,6 +10,7 @@ import { getPictureURL } from "../lib/utils";
 const navigation = [
   { name: "Members", href: "/" },
   { name: "Events", href: "/events" },
+  { name: "Post", href: "/post" },
 ];
 
 const Nav = () => {
@@ -19,11 +20,9 @@ const Nav = () => {
 
   return (
     <header className="flex border-b py-5 justify-between">
-      <Link href={"/"} className="flex">
-        <div className="w-10 flex-none">
-          <Image src="/CryptoPlaza.png" alt="Crypto Plaza" height={32} width={32} />
-        </div>
-        <div className="inline-block px-1 font-semibold text-2xl">LensEvents</div>
+      <Link href={"/"} className="flex items-center text-4xl">
+        🌐
+        <div className="inline-block ml-2 px-1 font-semibold text-xl">LensMeet.io</div>
       </Link>
       <div className="flex space-x-5 text-sm">
         {navigation.map((item) => (

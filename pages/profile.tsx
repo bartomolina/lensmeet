@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import Head from "next/head";
 import Image from "next/image";
 import { useActiveProfile, useUpdateProfileDetails, ProfileOwnedByMeFragment } from "@lens-protocol/react-web";
 import { getPictureURL, upload } from "../lib/utils";
@@ -43,7 +44,6 @@ const Profile = () => {
   }, [profile, loading]);
 
   const handleFormChange = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log(event.currentTarget.id);
     event.currentTarget.id === "name" || event.currentTarget.id === "bio"
       ? setFormData({
           ...formData,
@@ -71,15 +71,19 @@ const Profile = () => {
 
   return (
     <>
+      <Head>
+        <title>LensMeet</title>
+        <meta name="description" content="LensMeet" />
+      </Head>
       {profile && !loading && (
-        <div className="border rounded shadow-sm bg-white">
+        <div className="border rounded shadow-sm bg-white pb-10">
           <div
             className="inline-block min-h-max h-36 w-full bg-purple-300"
             style={{
               backgroundImage: `url("/bg.svg")`,
             }}
           ></div>
-          <div className="grid grid-cols-4 gap-x-2 pb-10">
+          <div className="grid grid-cols-4 gap-x-2">
             <div className="ml-8 space-y-3">
               <Image
                 src={getPictureURL(profile)}

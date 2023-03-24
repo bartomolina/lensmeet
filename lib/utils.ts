@@ -30,7 +30,10 @@ export const upload = async (data: any) => {
   // use method injection to add the missing function
   provider.getSigner = () => signer;
   // create a WebBundlr object
-  const bundlr = new WebBundlr("https://node1.bundlr.network", "matic", provider);
+  // const bundlr = new WebBundlr("https://node1.bundlr.network", "matic", provider);
+  const bundlr = new WebBundlr('https://devnet.bundlr.network', 'matic', signer?.provider, {
+    providerUrl: 'https://rpc-mumbai.maticvigil.com/',
+  });
 
   await bundlr.ready();
 

@@ -1,43 +1,66 @@
 import Image from "next/image";
 import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/solid";
-import { useProfile, useActiveProfile } from "@lens-protocol/react-web";
+import { useProfile, useActiveProfile, PostFragment } from "@lens-protocol/react-web";
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
 
 type Props = {
-  id: string;
+  _event: PostFragment;
 };
 
-const ProfileDetails = ({ id }: Props) => {
+const EventDetails = ({ _event }: Props) => {
   const { data: activeProfile } = useActiveProfile();
-  const { data: profile, loading } = useProfile({ profileId: id });
 
-  let attributes = {
-    location: "",
-    website: "",
-    twitter: "",
-    instagram: "",
-    github: "",
-    linkedin: "",
+  const getProfileAttribute = (attribute: string) => {
+    // @ts-ignore
+    return _event.metadata?.attributes.find((attr) => attr.traitType === attribute)
+      ? _event.metadata?.attributes.find((attr) => attr.traitType === attribute)?.value
+      : "";
   };
-  if (profile && !loading) {
-    const getProfileAttribute = (attribute: string) => {
-      // @ts-ignore
-      return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
-    };
-    attributes = {
-      location: getProfileAttribute("location"),
-      website: getProfileAttribute("website"),
-      twitter: getProfileAttribute("twitter"),
-      instagram: getProfileAttribute("instagram"),
-      github: getProfileAttribute("github"),
-      linkedin: getProfileAttribute("linkedin"),
-    };
-  }
+  const attributes = {
+    location: getProfileAttribute("Location") ?? "",
+    country: getProfileAttribute("Country") ?? "",
+    organizer: getProfileAttribute("Organizer") ?? "",
+    startDate: getProfileAttribute("Start date") ?? "",
+    endDate: getProfileAttribute("End date") ?? "",
+  };
+
+  console.log(_event);
+  console.log(attributes);
 
   return (
     <>
-      {profile && !loading && (
+      <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
+        <a
+          href={`https://testnet.lenster.xyz/posts/${_event.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center px-7 py-4"
+        >
+          <div className="w-14 flex-none">
+            <Image
+              src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.4/flags/4x3/${attributes.country?.toLowerCase()}.svg`}
+              alt={attributes.country}
+              width={50}
+              height={50}
+              style={{ width: "auto", height: "auto" }}
+              className="rounded-full"
+            />
+          </div>
+          <div className="w-full ml-7">
+            <div className="items-center">
+              <p className="text-lg font-medium">{_event.metadata.name}</p>
+              <p className="-mt-1 text-xs text-lime-700">{attributes.organizer}</p>
+            </div>
+            <p className="mt-3 text-gray-600">{_event.metadata.description}</p>
+            <p className="mt-3 flex items-center text-xs">
+              <MapPinIcon className="mr-0.5 h-4 w-4" />
+              {attributes.location}
+            </p>
+          </div>
+        </a>
+      </li>
+      {/* {profile && !loading && (
         <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
           <a
             href={`https://lenster.xyz/u/${profile.handle}`}
@@ -111,9 +134,9 @@ const ProfileDetails = ({ id }: Props) => {
             </div>
           )}
         </li>
-      )}
+      )} */}
     </>
   );
 };
 
-export default ProfileDetails;
+export default EventDetails;

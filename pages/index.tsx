@@ -34,7 +34,6 @@ const Home = () => {
   useEffect(() => {
     console.log(lensListsProfiles);
     if (lensListsProfiles) {
-      console.log("Querying...");
       query({
         query: gql(getMembers),
         fetchPolicy: "no-cache",
@@ -42,7 +41,6 @@ const Home = () => {
           profiles: lensListsProfiles,
         },
       }).then((response) => {
-        console.log("Done querying...");
         // @ts-ignore
         let members = response?.data?.profiles?.items;
         members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
@@ -90,8 +88,8 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>LensEvents</title>
-        <meta name="description" content="LensEvents" />
+        <title>LensMeet</title>
+        <meta name="description" content="LensMeet" />
       </Head>
       <div className="space-y-4">
         <section className="space-y-3">
