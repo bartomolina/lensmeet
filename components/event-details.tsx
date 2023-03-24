@@ -4,6 +4,8 @@ import { useProfile, useActiveProfile, PostFragment } from "@lens-protocol/react
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
 
+const monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+
 type Props = {
   _event: PostFragment;
 };
@@ -15,18 +17,26 @@ const EventDetails = ({ _event }: Props) => {
     // @ts-ignore
     return _event.metadata?.attributes.find((attr) => attr.traitType === attribute)
       ? _event.metadata?.attributes.find((attr) => attr.traitType === attribute)?.value
-      : "";
+      : null;
   };
   const attributes = {
     location: getProfileAttribute("Location") ?? "",
     country: getProfileAttribute("Country") ?? "",
     organizer: getProfileAttribute("Organizer") ?? "",
-    startDate: getProfileAttribute("Start date") ?? "",
-    endDate: getProfileAttribute("End date") ?? "",
+    startDate: getProfileAttribute("Start date")
+      ? new Date(parseInt(getProfileAttribute("Start date") as string) * 1000)
+      : null,
+    endDate: getProfileAttribute("End date")
+      ? new Date(parseInt(getProfileAttribute("End date") as string) * 1000)
+      : null,
   };
 
-  console.log(_event);
-  console.log(attributes);
+  let dateRange = "";
+  if (attributes.startDate && attributes.endDate) {
+    dateRange = `${monthNames[attributes.startDate.getMonth()]} ${attributes.startDate.getDate()} - ${
+      monthNames[attributes.endDate.getMonth()]
+    } ${attributes.endDate.getDate()}`;
+  }
 
   return (
     <>
@@ -37,20 +47,22 @@ const EventDetails = ({ _event }: Props) => {
           rel="noopener noreferrer"
           className="flex items-center px-7 py-4"
         >
-          <div className="w-14 flex-none">
+          <div className="w-14 h-14 relative flex-none">
             <Image
               src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.4/flags/4x3/${attributes.country?.toLowerCase()}.svg`}
               alt={attributes.country}
-              width={50}
-              height={50}
-              style={{ width: "auto", height: "auto" }}
-              className="rounded-full"
+              fill
+              sizes="(max-width: 56px) 100vw"
+              className="object-cover rounded-full"
             />
           </div>
           <div className="w-full ml-7">
-            <div className="items-center">
-              <p className="text-lg font-medium">{_event.metadata.name}</p>
-              <p className="-mt-1 text-xs text-lime-700">{attributes.organizer}</p>
+            <div className="flex justify-between">
+              <div className="items-center">
+                <p className="text-lg font-medium">{_event.metadata.name}</p>
+                <p className="-mt-1 text-xs text-lime-700">{attributes.organizer}</p>
+              </div>
+              {attributes.startDate && <div className="text-gray-400">{dateRange}</div>}
             </div>
             <p className="mt-3 text-gray-600">{_event.metadata.description}</p>
             <p className="mt-3 flex items-center text-xs">

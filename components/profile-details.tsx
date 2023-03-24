@@ -23,7 +23,7 @@ const ProfileDetails = ({ id }: Props) => {
   if (profile && !loading) {
     const getProfileAttribute = (attribute: string) => {
       // @ts-ignore
-      return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
+      return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;
     };
     attributes = {
       location: getProfileAttribute("location"),
@@ -45,14 +45,13 @@ const ProfileDetails = ({ id }: Props) => {
             rel="noopener noreferrer"
             className="flex items-center px-7 py-4"
           >
-            <div className="w-14 flex-none">
+            <div className="w-14 h-14 relative flex-none">
               <Image
                 src={getPictureURL(profile)}
                 alt={profile.handle}
-                width={50}
-                height={50}
-                style={{ width: "auto", height: "auto" }}
-                className="rounded-full"
+                fill
+                sizes="(max-width: 56px) 100vw"
+                className="object-cover rounded-full"
               />
             </div>
             <div className="w-full ml-7">

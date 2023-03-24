@@ -26,7 +26,7 @@ const Profile = () => {
       console.log(profile);
       const getProfileAttribute = (attribute: string) => {
         // @ts-ignore
-        return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : "";
+        return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;
       };
       setFormData({
         name: profile.name ?? "",
