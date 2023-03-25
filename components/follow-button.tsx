@@ -1,63 +1,68 @@
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
-import {
-  useFollow,
-  useUnfollow,
-  useActiveProfile,
-  ProfileFragment,
-  ProfileOwnedByMeFragment,
-} from "@lens-protocol/react-web";
+import { useFollow, useUnfollow, ProfileFragment, ProfileOwnedByMeFragment } from "@lens-protocol/react-web";
 import { useNotifications } from "./notifications-context";
 
 type Props = {
-  profile: ProfileFragment;
-  from: ProfileOwnedByMeFragment;
+  follower: ProfileOwnedByMeFragment;
+  followee: ProfileFragment;
 };
 
-const FollowButton = ({ profile, from }: Props) => {
-  const { data: activeProfile } = useActiveProfile();
-  const { execute: follow, isPending: isFollowPending, error: error } = useFollow({ followee: profile, follower: from });
-  const { execute: unfollow, isPending: isUnfollowPending } = useFollow({ followee: profile, follower: from });
+const FollowButton = ({ follower, followee }: Props) => {
+  const { execute: follow, isPending: isFollowPending, error: followError } = useFollow({ follower, followee });
+  const { execute: unfollow, isPending: isUnfollowPending, error: unfollowError } = useUnfollow({ follower, followee });
   const { showNotification, showError } = useNotifications();
 
-  const handleFollow = (event: FormEvent) => {
+  const handleFollow = (event: FormEvent, action: () => Promise<any>) => {
     event.preventDefault();
-    if (profile && profile.followStatus) {
-      const action = profile.followStatus.isFollowedByMe ? unfollow : follow;
-      console.log("following...");
-      unfollow()
-      .then(result => {
-        console.log("done following...");
-        console.log(result);
+    action()
+      .then((result) => {
+        if (!result.error) {
+          // console.log("result: ", result);
+          showNotification("Folowing done", `You're now following ${followee.handle}`);
+        }
       })
-      .catch(error => {
-        console.log("error...");
-        console.log(error);
-      })
-      .finally(() => {
-        console.log("finally following...");
+      .catch((error) => {
+        showError("Error", error.message);
       });
-    }
-    console.log("exit following...");
   };
+
+  useEffect(() => {
+    if (followError) {
+      showError(`Error following ${followee.handle}`, followError.message);
+    }
+    if (unfollowError) {
+      showError(`Error unfollowing ${followee.handle}`, unfollowError.message);
+    }
+  }, [followError, unfollowError]);
 
   return (
     <>
-      {profile.id != activeProfile?.id && (
+      {followee.id != follower?.id && (
         <>
-          {profile.followStatus && profile.followStatus.isFollowedByMe ? (
+          {followee.followStatus && followee.followStatus.isFollowedByMe ? (
             <button
-              onClick={handleFollow}
-              className="border border-red-500 text-red-900 rounded-md px-3 py-1 bg-red-50 bg-opacity-20 hover:bg-red-100"
+              onClick={(e) => handleFollow(e, unfollow)}
+              disabled={isUnfollowPending}
+              className={`border rounded-md px-3 py-1 bg-opacity-20 ${
+                isUnfollowPending
+                  ? "border-gray-500 text-gray-900 bg-gray-100"
+                  : "border-red-500 text-red-900 bg-red-50 hover:bg-red-100"
+              }`}
             >
-              <UserMinusIcon className="h-4 w-4 text-red-500" />
+              <UserMinusIcon className={`h-4 w-4 ${isUnfollowPending ? "text-gray-500" : "text-red-500"}`} />
             </button>
           ) : (
             <button
-              onClick={handleFollow}
-              className="border border-lime-500 text-lime-900 rounded-md px-3 py-1 bg-lime-50 bg-opacity-20 hover:bg-lime-100"
+              onClick={(e) => handleFollow(e, follow)}
+              disabled={isFollowPending}
+              className={`border rounded-md px-3 py-1 bg-opacity-20 ${
+                isFollowPending
+                  ? "border-gray-500 text-gray-900 bg-gray-100"
+                  : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
+              }`}
             >
-              <UserPlusIcon className="h-4 w-4 text-lime-500" />
+              <UserPlusIcon className={`h-4 w-4 ${isFollowPending ? "text-gray-500" : "text-lime-500"}`} />
             </button>
           )}
         </>

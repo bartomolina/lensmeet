@@ -11,7 +11,3 @@ export const lensConfig: LensConfig = {
   bindings: wagmiBindings(),
   environment: prod ? production : staging,
 };
-
-export const errorHandler = (error: FailedTransactionError) => {
-  console.log(error);
-};

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 const NotificationsContext = createContext({
-  showNotification: (title: string, txId: `0x${string}`, url?: string, message?: string) => {},
+  showNotification: (title: string, txId?: `0x${string}`, url?: string, message?: string) => {},
   showError: (title: string, error?: string) => {},
   notification: {
     title: "",
@@ -21,14 +21,14 @@ export const NotificationsProvider = ({ children }: React.PropsWithChildren) => 
   const [show, setShow] = useState(false);
   const [notification, setNotification] = useState({ title: "", txId: "0x", error: "", type: "success", url: "", message: "" });
 
-  const showNotification = (title: string, txId: `0x${string}`, url: string = "", message: string = "View transaction") => {
+  const showNotification = (title: string, message: string = "View transaction", txId: `0x${string}` = "0x", url: string = "") => {
     setNotification({
       title,
       txId,
       error: "",
       type: "success",
       url,
-      message,
+      message: message ?? "View transaction",
     });
     setShow(true);
     setTimeout(function () {

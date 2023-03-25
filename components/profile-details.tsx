@@ -114,7 +114,7 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
                   </a>
                 )}
               </div>
-              {activeProfile && <FollowButton profile={profile} from={activeProfile} />}
+              {activeProfile && <FollowButton follower={activeProfile} followee={profile}  />}
             </div>
           )}
         </li>

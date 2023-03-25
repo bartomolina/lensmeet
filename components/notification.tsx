@@ -8,7 +8,7 @@ const Notification = () => {
   const { notification, show, setShow } = useNotifications();
   const isError = notification.type === "error";
 
-  const url = notification.url || `https://mumbai.polygonscan.com/tx/${notification.txId}`
+  const url = notification.url || `https://mumbai.polygonscan.com/tx/${notification.txId}`;
 
   return (
     <>
@@ -40,18 +40,13 @@ const Notification = () => {
                   <div className="ml-3 w-0 flex-1 pt-0.5">
                     <p className="text-sm font-medium text-gray-900">{notification.title}</p>
                     <p className="mt-1 text-sm text-gray-500">
-                      {isError ? (
-                        <span>{notification.error}</span>
-                      ) : (
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:underline"
-                        >
+                      {isError && <span>{notification.error}</span>}
+                      {!isError && notification.txId != "0x" && (
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                           {notification.message}
                         </a>
                       )}
+                      {!isError && notification.txId === "0x" && <>{notification.message}</>}
                     </p>
                   </div>
                   <div className="ml-4 flex flex-shrink-0">
