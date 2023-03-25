@@ -20,23 +20,25 @@ const Nav = () => {
 
   return (
     <header className="flex border-b py-5 justify-between">
-      <Link href={"/"} className="flex items-center text-4xl">
-        <GlobeAsiaAustraliaIcon className="h-12 w-12 text-lime-700" />
-        <div className="inline-block ml-2 px-1 text-xl text-lime-900">LensMeet.io</div>
-      </Link>
-      <div className="flex space-x-5 text-sm">
-        {navigation.map((item) => (
-          <ActiveLink
-            // @ts-ignore
-            key={item.href}
-            activeClassName="border-lime-900"
-            inactiveClassName="text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-200"
-            className="flex items-center px-1 pt-1 border-b-2"
-            href={item.href}
-          >
-            {item.name}
-          </ActiveLink>
-        ))}
+      <div className="flex space-x-8">
+        <Link href={"/"} className="flex items-center text-4xl">
+          <GlobeAsiaAustraliaIcon className="h-12 w-12 text-lime-700" />
+          <div className="inline-block ml-1 px-1 text-xl text-lime-900">LensMeet.io</div>
+        </Link>
+        <div className="flex space-x-5 text-sm">
+          {navigation.map((item) => (
+            <ActiveLink
+              // @ts-ignore
+              key={item.href}
+              activeClassName="border-lime-900"
+              inactiveClassName="text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-200"
+              className="flex items-center px-1 pt-1 border-b-2"
+              href={item.href}
+            >
+              {item.name}
+            </ActiveLink>
+          ))}
+        </div>
       </div>
       <div className="flex items-center">
         {activeProfile ? (

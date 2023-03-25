@@ -56,7 +56,7 @@ const Home = () => {
         setProfiles(members ?? []);
       });
     }
-  }, [lensListsProfiles, profileLoading]);
+  }, [lensListsProfiles, profileLoading, query]);
 
   const filteredProfiles = useMemo(() => {
     let filtered = [...profiles];
@@ -116,10 +116,10 @@ const Home = () => {
         <section className="space-y-3">
           <div className="flex justify-between">
             <div className="space-x-3">
-              <FollowAll />
-              <span className="text-sm italic">
-                Showing <strong>{filteredProfiles.length}</strong> member(s)
+              <span className="text-sm italic text-gray-700">
+                Showing <strong className="text-gray-900">{filteredProfiles.length}</strong> member(s)
               </span>
+              <FollowAll />
             </div>
             <div>
               <label htmlFor="search" className="sr-only">

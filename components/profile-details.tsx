@@ -39,12 +39,16 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
   return (
     <>
       {profile && !loading && (
-        <li className={`${isOwner ? "bg-lime-50 bg-opacity-50" : "bg-white"} border rounded shadow-sm divide-y hover:-translate-y-0.5 transform transition`}>
+        <li
+          className={`${
+            isOwner ? "bg-lime-50 bg-opacity-50" : "bg-white"
+          } border rounded shadow-sm divide-y hover:-translate-y-0.5 transform transition`}
+        >
           <a
             href={`https://lenster.xyz/u/${profile.handle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center px-7 py-4"
+            className="flex items-center px-6 py-4"
           >
             <div className="w-14 h-14 relative flex-none">
               <Image
@@ -56,13 +60,16 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
               />
             </div>
             <div className="w-full ml-7">
-              <div className="items-center">
-                {profile.name && <p className="text-lg font-medium">{profile.name}</p>}
-                <p className="-mt-1 text-xs text-lime-700">{profile.handle}</p>
+              <div className="flex justify-between">
+                <div>
+                  {profile.name && <p className="text-lg font-medium">{profile.name}</p>}
+                  <p className="-mt-1 text-xs text-lime-700">{profile.handle}</p>
+                </div>
+                {isOwner && <div className="text-sm font-medium text-end text-lime-900">Owner</div>}
               </div>
-              {profile.bio && <p className="mt-3 text-gray-600">{profile.bio}</p>}
+              {profile.bio && <p className="mt-3 text-gray-800">{profile.bio}</p>}
               {attributes.location && (
-                <p className="mt-3 flex items-center text-xs">
+                <p className="mt-3 flex items-center text-xs text-gray-500">
                   <MapPinIcon className="mr-0.5 h-4 w-4" />
                   {attributes.location}
                 </p>
@@ -75,7 +82,7 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
             attributes.github ||
             attributes.linkedin ||
             activeProfile) && (
-            <div className="flex justify-end items-center space-x-5 py-3 px-4 text-gray-600">
+            <div className="flex justify-end items-center space-x-5 py-3 px-6 text-gray-600">
               <div className="flex space-x-2.5">
                 {attributes.website && (
                   <a href={attributes.website} target="_blank" rel="noopener noreferrer">

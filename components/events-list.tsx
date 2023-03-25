@@ -66,7 +66,7 @@ const ProfilesList = ({ events }: Props) => {
     <>
       {groupedByMonth.map((year) => (
         <div key={year.year}>
-          <h2 className="w-full text-end p-2 text-2xl text-gray-600">{year.year}</h2>
+          <h2 className="w-full text-end px-2 text-2xl text-gray-600">{year.year}</h2>
           {year.months.map((month) => (
             <div key={month.month}>
               <h3 className="text-xl font-medium p-2 mt-2">{monthNames[month.month]}</h3>

@@ -30,7 +30,7 @@ const CollectButton = ({ publication }: Props) => {
 
   return (
     <>
-      <button onClick={handleCollect} className="border border-lime-500 rounded-md px-3 py-1 hover:bg-lime-50">
+      <button onClick={handleCollect} className="border border-lime-500 text-lime-900 rounded-md px-3 py-1 bg-lime-50 bg-opacity-20 hover:bg-lime-200">
         🫡 I&apos;m going
       </button>
     </>

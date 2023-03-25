@@ -4,9 +4,11 @@ import type { AppProps } from "next/app";
 import { WagmiConfig } from "wagmi";
 import wagmiConfig from "../lib/wagmi";
 import { LensProvider } from "@lens-protocol/react-web";
+import { NotificationsProvider } from "../components/notifications-context";
 import { UserProvider } from "../components/user-context";
-import lensConfig from "../lib/lens";
+import { lensConfig, errorHandler } from "../lib/lens";
 import Layout from "../components/layout";
+import Notification from "../components/notification";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -15,13 +17,16 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <WagmiConfig client={wagmiConfig}>
-          <LensProvider config={lensConfig}>
+        <LensProvider config={lensConfig} onError={errorHandler}>
+          <NotificationsProvider>
             <UserProvider>
               <Layout>
                 <Component {...pageProps} />
+                <Notification />
               </Layout>
             </UserProvider>
-          </LensProvider>
+          </NotificationsProvider>
+        </LensProvider>
       </WagmiConfig>
     </>
   );
