@@ -19,11 +19,7 @@ const splitSignature = (signature: string) => {
   return utils.splitSignature(signature);
 };
 
-type Props = {
-  profiles: string[];
-};
-
-const FollowAll = ({ profiles }: Props) => {
+const FollowAll = () => {
   const { data: activeProfile } = useActiveProfile();
   const { mutate } = useApolloClient();
   const { isConnected } = useAccount();

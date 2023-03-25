@@ -12,27 +12,36 @@ import FollowAll from "../components/follow-all";
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Home = () => {
-  const { data } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
-  const { data: activeProfile } = useActiveProfile();
+  const { data: listMembers } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
+  const { data: listInfo } = useSWR("/lenslists/lists/845068988534030337", fetcher);
+  const { data: activeProfile, loading: profileLoading } = useActiveProfile();
   const [searchFilter, setSearchFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [followingFilter, setFollowingFilter] = useState("");
   const [eventFilter, setEventFilter] = useState("");
   const { query } = useApolloClient();
-  const [profiles, setProfiles] = useState([]);
+  const [profiles, setProfiles] = useState<Array<ProfileFragment>>([]);
 
   const lensListsProfiles = useMemo(() => {
-    let prod = true;
-    if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
-      prod = false;
+    let members = [] as ProfileFragment[];
+    if (listInfo && listMembers && listMembers.data?.members?.items) {
+      let prod = true;
+      if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
+        prod = false;
+      }
+      const stagingProfiles = ["bartomolina.test", "bartomolina1.test", "bartomolina2.test"];
+      // @ts-ignore
+      return prod ? listMembers.data.members.items.map((p) => p.profileId) : stagingProfiles;
     }
-    const stagingProfiles = ["bartomolina.test", "bartomolina1.test", "bartomolina2.test"];
-    // @ts-ignore
-    return prod ? data?.data.members.items.map((p) => p.profileId) : stagingProfiles;
-  }, [data]);
+    return members;
+  }, [listMembers, listInfo]);
+
+  const listOwner = useMemo(() => {
+    return listInfo?.data?.list?.ownerProfile?.id || null;
+  }, [listInfo]);
 
   useEffect(() => {
-    if (lensListsProfiles) {
+    if (lensListsProfiles && lensListsProfiles.length && activeProfile && !profileLoading) {
       query({
         query: gql(getMembers),
         fetchPolicy: "no-cache",
@@ -47,10 +56,18 @@ const Home = () => {
         setProfiles(members ?? []);
       });
     }
-  }, [lensListsProfiles, activeProfile]);
+  }, [lensListsProfiles, activeProfile, profileLoading]);
 
   const filteredProfiles = useMemo(() => {
     let filtered = profiles;
+
+    if (listOwner) {
+      const index = filtered.findIndex(member => member.id === listOwner);
+      if (index !== -1) {
+        filtered.unshift(...filtered.splice(index, 1));
+      }
+    }
+
     if (searchFilter) {
       filtered = filtered.filter(
         (profile: ProfileFragment) =>
@@ -82,7 +99,7 @@ const Home = () => {
     );
     groupedLocations.delete(undefined);
     return groupedLocations;
-  }, [profiles]);
+  }, [profiles, listOwner]);
 
   return (
     <>
@@ -93,7 +110,7 @@ const Home = () => {
       <div className="space-y-4">
         <section className="space-y-3">
           <div>
-            <FollowAll profiles={filteredProfiles} />
+            <FollowAll />
             <span className="text-sm ml-3 italic">
               Showing <strong>{filteredProfiles.length}</strong> member(s)
             </span>
@@ -168,7 +185,7 @@ const Home = () => {
           </div>
         </section>
         <section>
-          <ProfilesList profiles={filteredProfiles} />
+          <ProfilesList profiles={filteredProfiles} owner={listOwner} />
         </section>
       </div>
     </>

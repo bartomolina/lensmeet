@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/solid";
-import { useProfile, useActiveProfile, useCollect, PostFragment } from "@lens-protocol/react-web";
-import { getPictureURL } from "../lib/utils";
+import { PostFragment } from "@lens-protocol/react-web";
 import CollectButton from "./collect-button";
 
 const monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
@@ -11,8 +10,6 @@ type Props = {
 };
 
 const EventDetails = ({ _event }: Props) => {
-  const { data: activeProfile } = useActiveProfile();
-
   const getProfileAttribute = (attribute: string) => {
     // @ts-ignore
     return _event.metadata?.attributes.find((attr) => attr.traitType === attribute)
@@ -66,7 +63,7 @@ const EventDetails = ({ _event }: Props) => {
               </div>
               {attributes.startDate && <div className="text-gray-400">{dateRange}</div>}
             </div>
-            <p className="mt-3 text-gray-600">{_event.metadata.description}</p>
+            <p className="mt-3 text-gray-600">{_event.metadata.content}</p>
             <p className="mt-3 flex items-center text-xs">
               <MapPinIcon className="mr-0.5 h-4 w-4" />
               {attributes.location}

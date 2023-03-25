@@ -6,9 +6,10 @@ import FollowButton from "./follow-button";
 
 type Props = {
   id: string;
+  isOwner: boolean;
 };
 
-const ProfileDetails = ({ id }: Props) => {
+const ProfileDetails = ({ id, isOwner }: Props) => {
   const { data: activeProfile } = useActiveProfile();
   const { data: profile, loading } = useProfile({ profileId: id });
 
@@ -38,7 +39,7 @@ const ProfileDetails = ({ id }: Props) => {
   return (
     <>
       {profile && !loading && (
-        <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
+        <li className={`${isOwner ? "bg-lime-50 bg-opacity-50" : "bg-white"} border rounded shadow-sm divide-y hover:-translate-y-0.5 transform transition`}>
           <a
             href={`https://lenster.xyz/u/${profile.handle}`}
             target="_blank"
