@@ -1,10 +1,7 @@
-let prod = true;
-if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
-  prod = false;
-}
+import { isProd } from "./utils";
 
-const getMembersQueryType = prod ? "ProfileId" : "Handle";
-const getMembersVariable = prod ? "profileIds" : "handles";
+const getMembersQueryType = isProd ? "ProfileId" : "Handle";
+const getMembersVariable = isProd ? "profileIds" : "handles";
 
 export const getMembers = `
 query Profiles($profiles: [${getMembersQueryType}!]) {
@@ -119,13 +116,9 @@ query Profiles($profiles: [${getMembersQueryType}!]) {
 `;
 
 export const followAll = `
-mutation CreateFollowTypedData {
+mutation CreateFollowTypedData($profiles: [Follow!]!) {
   createFollowTypedData(request:{
-    follow: [
-      {
-        profile: "0x01827d"
-      }
-    ]
+    follow: $profiles
   }) {
     id
     expiresAt

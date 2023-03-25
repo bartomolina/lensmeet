@@ -13,13 +13,12 @@ const FollowButton = ({ follower, followee }: Props) => {
   const { execute: unfollow, isPending: isUnfollowPending, error: unfollowError } = useUnfollow({ follower, followee });
   const { showNotification, showError } = useNotifications();
 
-  const handleFollow = (event: FormEvent, action: () => Promise<any>) => {
+  const handleFollow = (event: FormEvent, action: () => Promise<any>, message: string) => {
     event.preventDefault();
     action()
       .then((result) => {
         if (!result.error) {
-          // console.log("result: ", result);
-          showNotification("Folowing done", `You're now following ${followee.handle}`);
+          showNotification(`${message} done`, `You're now ${message.toLowerCase()} ${followee.handle}`);
         }
       })
       .catch((error) => {
@@ -42,7 +41,7 @@ const FollowButton = ({ follower, followee }: Props) => {
         <>
           {followee.followStatus && followee.followStatus.isFollowedByMe ? (
             <button
-              onClick={(e) => handleFollow(e, unfollow)}
+              onClick={(e) => handleFollow(e, unfollow, "Unfollowing")}
               disabled={isUnfollowPending}
               className={`border rounded-md px-3 py-1 bg-opacity-20 ${
                 isUnfollowPending
@@ -54,7 +53,7 @@ const FollowButton = ({ follower, followee }: Props) => {
             </button>
           ) : (
             <button
-              onClick={(e) => handleFollow(e, follow)}
+              onClick={(e) => handleFollow(e, follow, "Following")}
               disabled={isFollowPending}
               className={`border rounded-md px-3 py-1 bg-opacity-20 ${
                 isFollowPending

@@ -3,6 +3,8 @@ import { ProfileFragment } from "@lens-protocol/react";
 import { WebBundlr } from "@bundlr-network/client";
 import { fetchSigner } from "wagmi/actions";
 
+export const isProd = process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() != "staging";
+
 export const getPictureURL = (profile: ProfileFragment) => {
   let picture = "/lens.jpeg";
   if (profile.picture) {
@@ -31,11 +33,7 @@ export const upload = async (data: any) => {
   provider.getSigner = () => signer;
 
   // create a WebBundlr object
-  let prod = true;
-  if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
-    prod = false;
-  }
-  const bundlrNode = prod ? "https://rpc-mumbai.maticvigil.com/" : "https://devnet.bundlr.network";
+  const bundlrNode = isProd ? "https://rpc-mumbai.maticvigil.com/" : "https://devnet.bundlr.network";
   const bundlr = new WebBundlr(bundlrNode, "matic", signer?.provider);
 
   await bundlr.ready();

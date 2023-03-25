@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 const NotificationsContext = createContext({
-  showNotification: (title: string, txId?: `0x${string}`, url?: string, message?: string) => {},
+  showNotification: (title: string, message?: string, txId?: `0x${string}`, url?: string) => {},
   showError: (title: string, error?: string) => {},
   notification: {
     title: "",

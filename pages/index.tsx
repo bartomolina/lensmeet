@@ -8,6 +8,7 @@ import { gql } from "@apollo/client";
 import { getMembers } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
 import FollowAll from "../components/follow-all";
+import { isProd } from "../lib/utils";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -25,13 +26,9 @@ const Home = () => {
   const lensListsProfiles = useMemo(() => {
     let members = [] as ProfileFragment[];
     if (listInfo && listMembers && listMembers.data?.members?.items) {
-      let prod = true;
-      if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === "staging") {
-        prod = false;
-      }
       const stagingProfiles = ["bartomolina.test", "bartomolina1.test", "bartomolina2.test"];
       // @ts-ignore
-      return prod ? listMembers.data.members.items.map((p) => p.profileId) : stagingProfiles;
+      return isProd ? listMembers.data.members.items.map((p) => p.profileId) : stagingProfiles;
     }
     return members;
   }, [listMembers, listInfo]);
@@ -119,7 +116,7 @@ const Home = () => {
               <span className="text-sm italic text-gray-700">
                 Showing <strong className="text-gray-900">{filteredProfiles.length}</strong> member(s)
               </span>
-              <FollowAll />
+              <FollowAll profiles={filteredProfiles} />
             </div>
             <div>
               <label htmlFor="search" className="sr-only">
