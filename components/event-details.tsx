@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPinIcon, GlobeAltIcon } from "@heroicons/react/24/solid";
+import { MapPinIcon } from "@heroicons/react/24/solid";
 import { PostFragment } from "@lens-protocol/react-web";
 import CollectButton from "./collect-button";
 
