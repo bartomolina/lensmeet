@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { ethers } from "ethers";
+// @ts-ignore
 import { v4 as uuidv4 } from "uuid";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -46,12 +47,12 @@ const Profile = () => {
         name: activeProfile.name ?? "",
         bio: activeProfile.bio ?? "",
         attributes: {
-          location: getProfileAttribute("location"),
-          website: getProfileAttribute("website"),
-          twitter: getProfileAttribute("twitter"),
-          instagram: getProfileAttribute("instagram"),
-          github: getProfileAttribute("github"),
-          linkedin: getProfileAttribute("linkedin"),
+          location: getProfileAttribute("location") ?? "",
+          website: getProfileAttribute("website") ?? "",
+          twitter: getProfileAttribute("twitter") ?? "",
+          instagram: getProfileAttribute("instagram") ?? "",
+          github: getProfileAttribute("github") ?? "",
+          linkedin: getProfileAttribute("linkedin") ?? "",
         },
       });
     }
@@ -87,11 +88,11 @@ const Profile = () => {
     event.preventDefault();
   
     if (activeProfile) {
-      let attributes = [] as any;
+      let attributes = [];
       Object.keys(formData.attributes).forEach((key, index) => {
         attributes.push({
           key,
-          value: formData.attributes[key],
+          value: formData.attributes[key as keyof typeof formData.attributes],
           displayType: "string",
         });
       });

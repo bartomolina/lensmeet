@@ -33,7 +33,7 @@ export const upload = async (data: any) => {
   provider.getSigner = () => signer;
 
   // create a WebBundlr object
-  const bundlrNode = isProd ? "https://rpc-mumbai.maticvigil.com/" : "https://devnet.bundlr.network";
+  const bundlrNode = isProd ? "https://node1.bundlr.network" : "https://devnet.bundlr.network";
   const bundlr = new WebBundlr(bundlrNode, "matic", signer?.provider);
 
   await bundlr.ready();

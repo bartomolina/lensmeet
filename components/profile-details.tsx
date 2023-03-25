@@ -27,12 +27,12 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
       return profile.attributes[attribute] ? profile.attributes[attribute].attribute.value : null;
     };
     attributes = {
-      location: getProfileAttribute("location"),
-      website: getProfileAttribute("website"),
-      twitter: getProfileAttribute("twitter"),
-      instagram: getProfileAttribute("instagram"),
-      github: getProfileAttribute("github"),
-      linkedin: getProfileAttribute("linkedin"),
+      location: getProfileAttribute("location") ?? "",
+      website: getProfileAttribute("website") ?? "",
+      twitter: getProfileAttribute("twitter") ?? "",
+      instagram: getProfileAttribute("instagram") ?? "",
+      github: getProfileAttribute("github") ?? "",
+      linkedin: getProfileAttribute("linkedin") ?? "",
     };
   }
 

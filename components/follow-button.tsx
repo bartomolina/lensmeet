@@ -27,13 +27,15 @@ const FollowButton = ({ follower, followee }: Props) => {
   };
 
   useEffect(() => {
-    if (followError) {
-      showError(`Error following ${followee.handle}`, followError.message);
+    if (followee.handle && showError) {
+      if (followError) {
+        showError(`Error following ${followee.handle}`, followError.message);
+      }
+      if (unfollowError) {
+        showError(`Error unfollowing ${followee.handle}`, unfollowError.message);
+      }
     }
-    if (unfollowError) {
-      showError(`Error unfollowing ${followee.handle}`, unfollowError.message);
-    }
-  }, [followError, unfollowError]);
+  }, [followError, unfollowError, followee.handle, showError]);
 
   return (
     <>
