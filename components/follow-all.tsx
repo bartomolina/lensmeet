@@ -1,27 +1,11 @@
 import { FormEvent, useState } from "react";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { ProfileFragment, useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { useNotifications } from "./notifications-context";
-// @ts-ignore
-import omitDeep from "omit-deep";
-import { followAll } from "../lib/api";
-import { isProd } from "../lib/utils";
-import LensHubAbi from "../lib/contracts/lens-hub-contract-abi.json";
-
-const LensHubContract = isProd
-  ? "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"
-  : "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82";
-
-const omit = (object: any, name: string) => {
-  return omitDeep(object, name);
-};
-
-const splitSignature = (signature: string) => {
-  return utils.splitSignature(signature);
-};
+import { omit, splitSignature, LensHubContract, LensHubAbi, followAll } from "../lib/api";
 
 type Props = {
   profiles: ProfileFragment[];
@@ -78,7 +62,7 @@ const FollowAll = ({ profiles }: Props) => {
         // @ts-ignore
         const typedData = typedResult.data.createFollowTypedData.typedData;
         const lensHub = new ethers.Contract(LensHubContract, LensHubAbi, signer);
-        const signature = await await signer._signTypedData(
+        const signature = await signer._signTypedData(
           omit(typedData.domain, "__typename"),
           omit(typedData.types, "__typename"),
           omit(typedData.value, "__typename")

@@ -53,7 +53,7 @@ const Nav = () => {
               />
               {activeProfile.handle}
             </Menu.Button>
-            <Menu.Items className="absolute w-full space-y-1 p-1.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
+            <Menu.Items className="absolute w-full space-y-1 p-0.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
               <Menu.Item>
                 <Link
                   href={"/profile"}
