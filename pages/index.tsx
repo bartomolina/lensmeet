@@ -5,7 +5,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { useActiveProfile, useApolloClient, ProfileFragment } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
-import { getMembers } from "../lib/api";
+import { getMembersQuery } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
 import FollowAll from "../components/follow-all";
 import { isProd } from "../lib/utils";
@@ -40,7 +40,7 @@ const Home = () => {
   useEffect(() => {
     if (lensListsProfiles && lensListsProfiles.length && !profileLoading) {
       query({
-        query: gql(getMembers),
+        query: gql(getMembersQuery),
         fetchPolicy: "no-cache",
         variables: {
           profiles: lensListsProfiles,

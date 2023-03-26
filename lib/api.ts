@@ -4,6 +4,7 @@ import omitDeep from "omit-deep";
 import { isProd } from "./utils";
 import _LensHubAbi from "./contracts/lens-hub-contract-abi.json";
 import _LensPeripheryAbi from "./contracts/lens-periphery-data-provider.json";
+import _LensFollowAbi from "./contracts/lens-follow-nft-contract-abi.json";
 
 const getMembersQueryType = isProd ? "ProfileId" : "Handle";
 const getMembersVariable = isProd ? "profileIds" : "handles";
@@ -18,6 +19,7 @@ export const LensPeripheryContract = isProd
 
 export const LensHubAbi = _LensHubAbi;
 export const LensPeripheryAbi = _LensPeripheryAbi;
+export const LensFollowAbi = _LensFollowAbi;
 
 export const omit = (object: any, name: string) => {
   return omitDeep(object, name);
@@ -27,7 +29,7 @@ export const splitSignature = (signature: string) => {
   return utils.splitSignature(signature);
 };
 
-export const getMembers = `
+export const getMembersQuery = `
 query Profiles($profiles: [${getMembersQueryType}!]) {
   profiles(request: { ${getMembersVariable}: $profiles, limit: 10 }) {
     items {
@@ -139,7 +141,7 @@ query Profiles($profiles: [${getMembersQueryType}!]) {
 }
 `;
 
-export const followAll = `
+export const followAllQuery = `
 mutation CreateFollowTypedData($profiles: [Follow!]!) {
   createFollowTypedData(request:{
     follow: $profiles
@@ -170,7 +172,72 @@ mutation CreateFollowTypedData($profiles: [Follow!]!) {
 }
 `;
 
-export const updateProfile = `
+export const followQuery = `
+mutation CreateFollowTypedData($profile: ProfileId!) {
+  createFollowTypedData(request:{
+    follow: [
+      {
+        profile: $profile
+      }
+    ]
+  }) {
+    id
+    expiresAt
+    typedData {
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      types {
+        FollowWithSig {
+          name
+          type
+        }
+      }
+      value {
+        nonce
+        deadline
+        profileIds
+        datas
+      }
+    }
+  }
+}
+`;
+
+export const unfollowQuery = `
+mutation CreateUnfollowTypedData($profile: ProfileId!) {
+  createUnfollowTypedData(request:{
+    profile: $profile
+  }) {
+    id
+    expiresAt
+    typedData {
+      types {
+        BurnWithSig {
+          name
+          type
+        }
+      }
+      domain {
+        version
+        chainId
+        name
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        tokenId
+      }
+    }
+  }
+}
+`;
+
+export const updateProfileQuery = `
 mutation CreateSetProfileMetadataTypedData($profileId: ProfileId!, $url: Url!) {
   createSetProfileMetadataTypedData(request: { 
       profileId: $profileId, 
@@ -201,3 +268,79 @@ mutation CreateSetProfileMetadataTypedData($profileId: ProfileId!, $url: Url!) {
   }
 }
 `;
+
+export const createPostQuery = `
+mutation CreatePostTypedData($profileId: ProfileId!, $url: Url!) {
+  createPostTypedData(request: {
+    profileId: $profileId,
+    contentURI: $url,
+    collectModule: {
+      freeCollectModule: {
+        followerOnly: false
+      }
+    },
+    referenceModule: {
+      followerOnlyReferenceModule: false
+    }
+  }) {
+    id
+    expiresAt
+    typedData {
+      types {
+        PostWithSig {
+          name
+          type
+        }
+      }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        contentURI
+        collectModule
+        collectModuleInitData
+        referenceModule
+        referenceModuleInitData
+      }
+    }
+  }
+}
+`
+
+export const collectQuery = `
+mutation CreateCollectTypedData($publicationId: InternalPublicationId!) {
+  createCollectTypedData(request: {
+    publicationId: $publicationId
+  }) {
+    id
+    expiresAt
+    typedData {
+      types {
+        CollectWithSig {
+          name
+          type
+        }
+      }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        pubId
+        data
+      }
+    }
+  }
+}
+`

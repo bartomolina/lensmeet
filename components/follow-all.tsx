@@ -5,7 +5,7 @@ import { InjectedConnector } from "wagmi/connectors/injected";
 import { ProfileFragment, useActiveProfile, useApolloClient } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { useNotifications } from "./notifications-context";
-import { omit, splitSignature, LensHubContract, LensHubAbi, followAll } from "../lib/api";
+import { omit, splitSignature, LensHubContract, LensHubAbi, followAllQuery } from "../lib/api";
 
 type Props = {
   profiles: ProfileFragment[];
@@ -53,7 +53,7 @@ const FollowAll = ({ profiles }: Props) => {
         const signer = await connector.getSigner();
 
         const typedResult = await mutate({
-          mutation: gql(followAll),
+          mutation: gql(followAllQuery),
           variables: {
             profiles: profilesToFollow,
           },
@@ -85,11 +85,8 @@ const FollowAll = ({ profiles }: Props) => {
           "Please click here and wait for the transaction to complete and refresh the page after a few seconds",
           result.hash
         );
-        console.log("Result: ", result);
       }
     }
-
-    setFollowing(false);
   };
 
   return activeProfile ? (

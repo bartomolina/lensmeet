@@ -6,10 +6,16 @@ import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { ProfileFragment, useActiveProfile, useApolloClient, useUpdateProfileDetails, ProfileOwnedByMeFragment } from "@lens-protocol/react-web";
+import {
+  ProfileFragment,
+  useActiveProfile,
+  useApolloClient,
+  useUpdateProfileDetails,
+  ProfileOwnedByMeFragment,
+} from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { useNotifications } from "../components/notifications-context";
-import { omit, splitSignature, LensPeripheryContract, LensPeripheryAbi, updateProfile } from "../lib/api";
+import { omit, splitSignature, LensPeripheryContract, LensPeripheryAbi, updateProfileQuery } from "../lib/api";
 import { getPictureURL, upload } from "../lib/utils";
 
 const Profile = () => {
@@ -34,7 +40,7 @@ const Profile = () => {
     connector: new InjectedConnector(),
   });
   const { disconnectAsync } = useDisconnect();
-  const [following, setFollowing] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const { showNotification, showError } = useNotifications();
 
   useEffect(() => {
@@ -86,7 +92,8 @@ const Profile = () => {
 
   const handleSubmitAPI = async (event: FormEvent) => {
     event.preventDefault();
-  
+    setUpdating(true);
+
     if (activeProfile) {
       let attributes = [];
       Object.keys(formData.attributes).forEach((key, index) => {
@@ -112,25 +119,25 @@ const Profile = () => {
       };
       console.log(profileData);
       const url = await upload(profileData);
-  
+
       if (isConnected) {
         await disconnectAsync();
       }
-  
+
       const { connector } = await connectAsync();
       if (connector instanceof InjectedConnector) {
         const signer = await connector.getSigner();
-  
+
         const typedResult = await mutate({
-          mutation: gql(updateProfile),
+          mutation: gql(updateProfileQuery),
           variables: {
             profileId: activeProfile.id,
-            url
+            url,
           },
         });
 
         console.log(typedResult);
-  
+
         // @ts-ignore
         const typedData = typedResult.data.createSetProfileMetadataTypedData.typedData;
         const lensPeriphery = new ethers.Contract(LensPeripheryContract, LensPeripheryAbi, signer);
@@ -140,7 +147,7 @@ const Profile = () => {
           omit(typedData.value, "__typename")
         );
         const { v, r, s } = splitSignature(signature);
-  
+
         const result = await lensPeriphery.setProfileMetadataURIWithSig({
           profileId: typedData.value.profileId,
           metadata: typedData.value.metadata,
@@ -159,6 +166,7 @@ const Profile = () => {
         console.log("Result: ", result);
       }
     }
+    setUpdating(false);
   };
 
   return (
@@ -330,7 +338,12 @@ const Profile = () => {
                 <div className="flex justify-end pt-5">
                   <button
                     type="submit"
-                    className="border border-lime-500 text-lime-900 rounded-md px-3 py-1 bg-lime-50 bg-opacity-20 hover:bg-lime-200 text-sm"
+                    disabled={updating}
+                    className={`border rounded-md px-3 py-1 bg-opacity-20 ${
+                      updating
+                        ? "border-gray-500 text-gray-900 bg-gray-100"
+                        : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
+                    }`}
                   >
                     Save
                   </button>
