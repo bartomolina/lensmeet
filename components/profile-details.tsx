@@ -76,53 +76,47 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
               )}
             </div>
           </a>
-          {(attributes.website ||
-            attributes.twitter ||
-            attributes.instagram ||
-            attributes.github ||
-            attributes.linkedin ||
-            activeProfile) && (
-            <div className="flex justify-between py-3 px-6 text-gray-600">
-              <div className="flex items-center text-sm space-x-2">
-                <PencilSquareIcon className="h-4 w-4" />
-                <span>{profile.stats.totalPublications}</span>
-              </div>
-              <div className="flex items-center space-x-5">
-                <div className="flex space-x-2.5">
-                  {attributes.website && (
-                    <a href={attributes.website} target="_blank" rel="noopener noreferrer">
-                      <GlobeAltIcon className="h-5 w-5" />
-                    </a>
-                  )}
-                  {attributes.twitter && (
-                    <a href={`https://twitter.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
-                      <Image src="/twitter.svg" alt="Twitter" width={20} height={20} />
-                    </a>
-                  )}
-                  {attributes.instagram && (
-                    <a href={`https://instagram.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
-                      <Image src="/instagram.svg" alt="Instagram" width={20} height={20} />
-                    </a>
-                  )}
-                  {attributes.github && (
-                    <a href={`https://github.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
-                      <Image src="/github.svg" alt="GitHub" width={20} height={20} />
-                    </a>
-                  )}
-                  {attributes.linkedin && (
-                    <a
-                      href={`https://www.linkedin.com/in/${attributes.linkedin}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
-                    </a>
-                  )}
-                </div>
-                {activeProfile && <FollowButton follower={activeProfile} followee={profile} />}
-              </div>
+
+          <div className="flex justify-between py-3 px-6 text-gray-600">
+            <div className="flex items-center text-sm space-x-2">
+              <PencilSquareIcon className="h-4 w-4" />
+              <span>{profile.stats.totalPublications}</span>
             </div>
-          )}
+            <div className="flex items-center space-x-5">
+              <div className="flex space-x-2.5">
+                {attributes.website && (
+                  <a href={attributes.website} target="_blank" rel="noopener noreferrer">
+                    <GlobeAltIcon className="h-5 w-5" />
+                  </a>
+                )}
+                {attributes.twitter && (
+                  <a href={`https://twitter.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/twitter.svg" alt="Twitter" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.instagram && (
+                  <a href={`https://instagram.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/instagram.svg" alt="Instagram" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.github && (
+                  <a href={`https://github.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/github.svg" alt="GitHub" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.linkedin && (
+                  <a
+                    href={`https://www.linkedin.com/in/${attributes.linkedin}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Image src="/linkedin.svg" alt="LinkedIn" width={20} height={20} />
+                  </a>
+                )}
+              </div>
+              {activeProfile && <FollowButton follower={activeProfile} followee={profile} />}
+            </div>
+          </div>
         </li>
       )}
     </>

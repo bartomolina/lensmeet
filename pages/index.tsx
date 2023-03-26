@@ -12,8 +12,26 @@ import { isProd } from "../lib/utils";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
+const multiPageFetcher = async (url: string) => {
+  let allMembers = [] as string[];
+  let pageNumber = 0;
+  let totalMembers = 0;
+  do {
+    const pageResult = await axios.get(url + pageNumber++ * 50).then((res) => {
+      return res.data;
+    });
+    totalMembers = pageResult.data.members.pageInfo.totalCount;
+    const members = pageResult.data.members.items;
+    allMembers = allMembers.concat(members.map((m: { profileId: string }) => m.profileId));
+  } while (pageNumber < 10 && allMembers.length != totalMembers);
+  return allMembers;
+};
+
 const Home = () => {
-  const { data: listMembers } = useSWR("/lenslists/lists/845068988534030337/members", fetcher);
+  const { data: listMembers } = useSWR(
+    "/lenslists/lists/845068988534030337/members?limit=50&offset=0",
+    multiPageFetcher
+  );
   const { data: listInfo } = useSWR("/lenslists/lists/845068988534030337", fetcher);
   const { data: activeProfile, loading: profileLoading } = useActiveProfile();
   const [searchFilter, setSearchFilter] = useState("");
@@ -25,10 +43,9 @@ const Home = () => {
 
   const lensListsProfiles = useMemo(() => {
     let members = [] as ProfileFragment[];
-    if (listInfo && listMembers && listMembers.data?.members?.items) {
+    if (listInfo && listMembers) {
       const stagingProfiles = ["bartomolina.test", "bartomolina1.test", "bartomolina2.test"];
-      // @ts-ignore
-      return isProd ? listMembers.data.members.items.map((p) => p.profileId) : stagingProfiles;
+      return isProd ? listMembers : stagingProfiles;
     }
     return members;
   }, [listMembers, listInfo]);
@@ -38,20 +55,34 @@ const Home = () => {
   }, [listInfo]);
 
   useEffect(() => {
-    if (lensListsProfiles && lensListsProfiles.length && !profileLoading) {
-      query({
-        query: gql(getMembersQuery),
-        fetchPolicy: "no-cache",
-        variables: {
-          profiles: lensListsProfiles,
-        },
-      }).then((response) => {
+    const fetchMembers = async () => {
+      let members = [] as ProfileFragment[];
+      let pageNumber = 0;
+
+      while (
+        lensListsProfiles.slice(pageNumber * 50, pageNumber * 50 + 50) &&
+        lensListsProfiles.slice(pageNumber * 50, pageNumber * 50 + 50).length &&
+        pageNumber < 11
+      ) {
+        const response = await query({
+          query: gql(getMembersQuery),
+          fetchPolicy: "no-cache",
+          variables: {
+            profiles: lensListsProfiles.slice(pageNumber * 50, pageNumber * 50 + 50),
+          },
+        });
+        pageNumber++;
         // @ts-ignore
-        let members = response?.data?.profiles?.items;
-        members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
-        console.log("Members... ", members);
-        setProfiles(members ?? []);
-      });
+        members = members.concat(response?.data?.profiles?.items);
+      }
+
+      members = [...members].sort((a, b) => b.stats.totalPublications - a.stats.totalPublications);
+      console.log("Members... ", members);
+      setProfiles(members ?? []);
+    };
+
+    if (lensListsProfiles && lensListsProfiles.length && !profileLoading) {
+      fetchMembers();
     }
   }, [lensListsProfiles, profileLoading, query]);
 
