@@ -61,7 +61,21 @@ type Props = {
 };
 
 const ProfilesList = ({ events, attendance }: Props) => {
-  const groupedByMonth = groupByMonth(events);
+  const sortedEvents = [...events];
+  sortedEvents.sort((a, b) => {
+    let aDate = 0;
+    let bDate = 0;
+
+    let aStartAttr = a.metadata.attributes.find(attribute => attribute.traitType === "Start date" );
+    let bStartAttr = b.metadata.attributes.find(attribute => attribute.traitType === "Start date" );
+    if (aStartAttr && bStartAttr) {
+      aDate = aStartAttr.value ? parseInt(aStartAttr.value) : 0;
+      bDate = bStartAttr.value ? parseInt(bStartAttr.value) : 0;
+    }
+    return aDate - bDate;
+  });
+  console.log(events);
+  const groupedByMonth = groupByMonth(sortedEvents);
 
   return (
     <>

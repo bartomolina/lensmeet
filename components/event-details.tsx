@@ -3,6 +3,7 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { PostFragment, ProfileFragment } from "@lens-protocol/react-web";
 import CollectButton from "./collect-button";
 import { getPictureURL } from "../lib/utils";
+import { isProd } from "../lib/utils";
 
 const monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 
@@ -41,7 +42,7 @@ const EventDetails = ({ _event, attendees }: Props) => {
     <>
       <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
         <a
-          href={`https://testnet.lenster.xyz/posts/${_event.id}`}
+          href={`${isProd ? "https://lenster.xyz/posts/" : "https://testnet.lenster.xyz/posts/"}${_event.id}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center px-7 py-4"

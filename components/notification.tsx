@@ -3,12 +3,15 @@ import { Transition } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import { useNotifications } from "./notifications-context";
+import { isProd } from "../lib/utils";
 
 const Notification = () => {
   const { notification, show, setShow } = useNotifications();
   const isError = notification.type === "error";
 
-  const url = notification.url || `https://mumbai.polygonscan.com/tx/${notification.txId}`;
+  const url =
+    notification.url ||
+    `${isProd ? "https://polygonscan.com/tx/" : "https://mumbai.polygonscan.com/tx/"}${notification.txId}`;
 
   return (
     <>

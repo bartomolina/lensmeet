@@ -3,6 +3,7 @@ import { MapPinIcon, GlobeAltIcon, PencilSquareIcon } from "@heroicons/react/24/
 import { useProfile, useActiveProfile } from "@lens-protocol/react-web";
 import { getPictureURL } from "../lib/utils";
 import FollowButton from "./follow-button";
+import { isProd } from "../lib/utils";
 
 type Props = {
   id: string;
@@ -45,7 +46,7 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
           } border rounded shadow-sm divide-y hover:-translate-y-0.5 transform transition`}
         >
           <a
-            href={`https://lenster.xyz/u/${profile.handle}`}
+            href={`${isProd ? "https://lenster.xyz/u/" : "https://testnet.lenster.xyz/u/"}${profile.handle}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center px-6 py-4"

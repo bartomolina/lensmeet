@@ -93,17 +93,22 @@ const CollectButton = ({ publication }: Props) => {
 
   return (
     <>
-      <button
-        onClick={handleCollectAPI}
-        disabled={collecting}
-        className={`border rounded-md px-3 py-1 bg-opacity-20 ${
-          collecting
-            ? "border-gray-500 text-gray-900 bg-gray-100"
-            : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
-        }`}
-      >
-        I&apos;m going
-      </button>
+      {
+        // @ts-ignore
+        !publication.hasCollectedByMe && (
+          <button
+            onClick={handleCollectAPI}
+            disabled={collecting}
+            className={`border rounded-md px-3 py-1 bg-opacity-20 ${
+              collecting
+                ? "border-gray-500 text-gray-900 bg-gray-100"
+                : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
+            }`}
+          >
+            I&apos;m going
+          </button>
+        )
+      }
     </>
   );
 };
