@@ -57,9 +57,10 @@ function groupByMonth(events: PostFragment[]) {
 
 type Props = {
   events: PostFragment[];
+  attendance: IAttendance[];
 };
 
-const ProfilesList = ({ events }: Props) => {
+const ProfilesList = ({ events, attendance }: Props) => {
   const groupedByMonth = groupByMonth(events);
 
   return (
@@ -71,7 +72,14 @@ const ProfilesList = ({ events }: Props) => {
             <div key={month.month}>
               <h3 className="text-xl font-medium p-2 mt-2">{monthNames[month.month]}</h3>
               <ul className="space-y-4">
-                {month.events && month.events.map((_event) => <EventDetails key={_event.id} _event={_event} />)}
+                {month.events &&
+                  month.events.map((_event) => (
+                    <EventDetails
+                      key={_event.id}
+                      _event={_event}
+                      attendees={attendance.find((attendance) => attendance._event === _event.id)?.attendees ?? []}
+                    />
+                  ))}
               </ul>
             </div>
           ))}

@@ -1,15 +1,17 @@
 import Image from "next/image";
 import { MapPinIcon } from "@heroicons/react/24/solid";
-import { PostFragment } from "@lens-protocol/react-web";
+import { PostFragment, ProfileFragment } from "@lens-protocol/react-web";
 import CollectButton from "./collect-button";
+import { getPictureURL } from "../lib/utils";
 
 const monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 
 type Props = {
   _event: PostFragment;
+  attendees: ProfileFragment[];
 };
 
-const EventDetails = ({ _event }: Props) => {
+const EventDetails = ({ _event, attendees }: Props) => {
   const getProfileAttribute = (attribute: string) => {
     // @ts-ignore
     return _event.metadata?.attributes.find((attr) => attr.traitType === attribute)
@@ -72,31 +74,26 @@ const EventDetails = ({ _event }: Props) => {
         </a>
         <div className="flex justify-between items-center space-x-5 py-3 px-6 text-gray-600">
           <div className="flex items-center">
-            <div className="isolate flex -space-x-2 overflow-hidden">
-              {/* <img
-                className="relative z-30 inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt=""
-              />
-              <img
-                className="relative z-20 inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt=""
-              />
-              <img
-                className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-                alt=""
-              />
-              <img
-                className="relative z-0 inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt=""
-              /> */}
-            </div>
-            <span className="text-sm ml-3 italic">
-              <strong>3</strong> attending
-            </span>
+            {attendees.length > 0 && (
+              <>
+                <div className="isolate flex -space-x-2 overflow-hidden">
+                  {attendees.map((attendee) => (
+                    <div key={attendee.id} className="w-8 h-8 relative flex-none">
+                      <Image
+                        src={getPictureURL(attendee)}
+                        alt={attendee.handle}
+                        fill
+                        sizes="(max-width: 32px) 100vw"
+                        className="object-cover rounded-full ring-2 ring-white z-30"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <span className="text-sm ml-3 italic">
+                  <strong>{attendees.length}</strong> attending
+                </span>
+              </>
+            )}
           </div>
           <div className="flex">
             <CollectButton publication={_event} />

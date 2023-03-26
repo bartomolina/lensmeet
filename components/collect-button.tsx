@@ -1,11 +1,8 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import {
-  useFollow,
-  useUnfollow,
-  ProfileFragment,
   ProfileOwnedByMeFragment,
   useActiveProfile,
   useApolloClient,
@@ -13,9 +10,8 @@ import {
   AnyPublicationFragment,
 } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
-import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
 import { useNotifications } from "./notifications-context";
-import { omit, splitSignature, LensHubContract, LensHubAbi, LensFollowAbi, collectQuery } from "../lib/api";
+import { omit, splitSignature, LensHubContract, LensHubAbi, collectQuery } from "../lib/api";
 
 type Props = {
   publication: AnyPublicationFragment;
@@ -106,7 +102,7 @@ const CollectButton = ({ publication }: Props) => {
             : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
         }`}
       >
-        🫡 I&apos;m going
+        I&apos;m going
       </button>
     </>
   );

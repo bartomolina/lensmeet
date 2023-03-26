@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "@headlessui/react";
-import { useActiveProfile } from "@lens-protocol/react-web";
+import { useActiveProfile, useProfilesOwnedByMe, useActiveProfileSwitch } from "@lens-protocol/react-web";
 import { useUser } from "./user-context";
 import ActiveLink from "./active-link";
 import { getPictureURL } from "../lib/utils";
@@ -17,6 +17,8 @@ const Nav = () => {
   const router = useRouter();
   const { signIn, signOut } = useUser();
   const { data: activeProfile } = useActiveProfile();
+  const { data: profilesOwned } = useProfilesOwnedByMe();
+  const { execute: switchProfile } = useActiveProfileSwitch();
 
   return (
     <header className="flex border-b py-5 justify-between">
@@ -54,22 +56,38 @@ const Nav = () => {
               {activeProfile.handle}
             </Menu.Button>
             <Menu.Items className="absolute w-full space-y-1 p-0.5 text-sm z-50 mt-1 border rounded-md text-gray-900 bg-white">
-              <Menu.Item>
-                <Link
-                  href={"/profile"}
-                  className="block w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md"
-                >
-                  Profile
-                </Link>
-              </Menu.Item>
-              <Menu.Item>
-                <div
-                  className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md"
-                  onClick={signOut}
-                >
-                  Disconnect
+              <div className="divide-y">
+                <div>
+                  <Menu.Item>
+                    <Link
+                      href={"/profile"}
+                      className="block w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md"
+                    >
+                      Profile
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <div
+                      className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md"
+                      onClick={signOut}
+                    >
+                      Disconnect
+                    </div>
+                  </Menu.Item>
                 </div>
-              </Menu.Item>
+                <div>
+                  {profilesOwned?.map((profile) => (
+                    <Menu.Item key={profile.id}>
+                      <div
+                        className="w-full p-1.5 hover:cursor-pointer hover:bg-lime-300 hover:text-lime-900 rounded-md text-xs"
+                        onClick={() => switchProfile(profile.id)}
+                      >
+                        {profile.handle}
+                      </div>
+                    </Menu.Item>
+                  ))}
+                </div>
+              </div>
             </Menu.Items>
           </Menu>
         ) : (
