@@ -2,8 +2,9 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "@headlessui/react";
-import { useActiveProfile } from "@lens-protocol/react-web";
-import { useUser } from "./user-context";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { useActiveProfile, useWalletLogin, useWalletLogout, useApolloClient } from "@lens-protocol/react-web";
 import ActiveLink from "./active-link";
 import { getPictureURL } from "../lib/utils";
 import { GlobeAsiaAustraliaIcon } from "@heroicons/react/24/solid";
@@ -15,8 +16,34 @@ const navigation = [
 
 const Nav = () => {
   const router = useRouter();
-  const { signIn, signOut } = useUser();
   const { data: activeProfile } = useActiveProfile();
+  const { execute: login } = useWalletLogin();
+  const { execute: logout } = useWalletLogout();
+  const { isConnected } = useAccount();
+  const { connectAsync } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnectAsync } = useDisconnect();
+  const { cache } = useApolloClient();
+
+  const signIn = async () => {
+    if (isConnected) {
+      await disconnectAsync();
+    }
+
+    const { connector } = await connectAsync();
+
+    if (connector instanceof InjectedConnector) {
+      const signer = await connector.getSigner();
+      await login(signer);
+      await cache.reset();
+    }
+  };
+
+  const signOut = async () => {
+    await logout();
+    await cache.reset();
+  };
 
   return (
     <header className="flex border-b py-5 justify-between">

@@ -5,6 +5,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { useActiveProfile, useApolloClient, ProfileFragment } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
+import { useEvents } from "../components/events-context";
 import { getMembersQuery } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
 import FollowAll from "../components/follow-all";
@@ -40,6 +41,7 @@ const Home = () => {
   const [eventFilter, setEventFilter] = useState("");
   const { query } = useApolloClient();
   const [profiles, setProfiles] = useState<Array<ProfileFragment>>([]);
+  const { events } = useEvents();
 
   const lensListsProfiles = useMemo(() => {
     let members = [] as ProfileFragment[];
@@ -105,6 +107,11 @@ const Home = () => {
       );
     }
 
+    if (eventFilter) {
+      const attendees = events.find(e => e._event.id === eventFilter)?.attendees;
+      filtered = filtered.filter((profile) => attendees?.map(a => a.id).includes(profile.id));
+    }
+
     if (followingFilter) {
       const following = followingFilter === "Following";
       // @ts-ignore
@@ -123,7 +130,7 @@ const Home = () => {
     }
 
     return filtered;
-  }, [profiles, searchFilter, locationFilter, followingFilter, listOwner]);
+  }, [profiles, searchFilter, locationFilter, eventFilter, followingFilter, listOwner]);
 
   const locations = useMemo(() => {
     let groupedLocations = new Set(
@@ -216,7 +223,9 @@ const Home = () => {
                 onChange={(event) => setEventFilter(event.target.value)}
                 value={eventFilter}
               >
-                <option>Event</option>
+                <option value="">Event</option>
+                {events &&
+                    events.map((e) => <option key={e._event.id} value={e._event.id}>{e._event.metadata.name}</option>)}
               </select>
             </div>
           </div>

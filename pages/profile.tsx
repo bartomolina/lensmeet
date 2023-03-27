@@ -117,7 +117,6 @@ const Profile = () => {
         name: formData.name,
         cover_picture: activeProfile?.coverPicture,
       };
-      console.log(profileData);
       const url = await upload(profileData);
 
       if (isConnected) {
@@ -135,8 +134,6 @@ const Profile = () => {
             url,
           },
         });
-
-        console.log(typedResult);
 
         // @ts-ignore
         const typedData = typedResult.data.createSetProfileMetadataTypedData.typedData;
@@ -163,7 +160,6 @@ const Profile = () => {
           "Please click here and wait for the transaction to complete and refresh the page after a few seconds",
           result.hash
         );
-        console.log("Result: ", result);
       }
     }
     setUpdating(false);

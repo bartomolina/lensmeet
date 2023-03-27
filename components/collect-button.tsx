@@ -8,20 +8,21 @@ import {
   useApolloClient,
   useCollect,
   AnyPublicationFragment,
+  PostFragment,
 } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { useNotifications } from "./notifications-context";
 import { omit, splitSignature, LensHubContract, LensHubAbi, collectQuery } from "../lib/api";
 
 type Props = {
-  publication: AnyPublicationFragment;
+  _event: IEvent;
 };
 
-const CollectButton = ({ publication }: Props) => {
+const CollectButton = ({ _event }: Props) => {
   const { data: activeProfile, loading } = useActiveProfile();
   const { execute: collect, isPending } = useCollect({
     collector: activeProfile as ProfileOwnedByMeFragment,
-    publication,
+    publication: _event._event,
   });
   const { showNotification, showError } = useNotifications();
   const { mutate } = useApolloClient();
@@ -34,7 +35,6 @@ const CollectButton = ({ publication }: Props) => {
 
   const handleCollect = async (event: FormEvent) => {
     event.preventDefault();
-    console.log(publication);
     collect().catch(console.log);
   };
 
@@ -54,7 +54,7 @@ const CollectButton = ({ publication }: Props) => {
         const typedResult = await mutate({
           mutation: gql(collectQuery),
           variables: {
-            publicationId: publication.id,
+            publicationId: _event._event.id,
           },
         });
 
@@ -95,7 +95,7 @@ const CollectButton = ({ publication }: Props) => {
     <>
       {
         // @ts-ignore
-        !publication.hasCollectedByMe && (
+        !_event._event.hasCollectedByMe && activeProfile && (
           <button
             onClick={handleCollectAPI}
             disabled={collecting}

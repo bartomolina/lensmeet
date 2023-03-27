@@ -148,7 +148,6 @@ const PostEvent = () => {
         description: formData.description,
         name: formData.name,
       };
-      console.log(postData);
       const url = await upload(postData);
 
       if (isConnected) {
@@ -166,8 +165,6 @@ const PostEvent = () => {
             url,
           },
         });
-
-        console.log(typedResult);
 
         // @ts-ignore
         const typedData = typedResult.data.createPostTypedData.typedData;
@@ -198,7 +195,6 @@ const PostEvent = () => {
           "Please click here and wait for the transaction to complete and refresh the page after a few seconds",
           result.hash
         );
-        console.log("Result: ", result);
       }
     }
     setSubmitting(false);

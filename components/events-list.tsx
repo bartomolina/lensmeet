@@ -1,9 +1,10 @@
+import { IEvent } from "../global";
 import { PostFragment } from "@lens-protocol/react";
 import EventDetails from "./event-details";
 
 interface IEventsByMonth {
   month: number;
-  events: PostFragment[];
+  events: IEvent[];
 }
 
 interface IEventsByYear {
@@ -26,10 +27,10 @@ const monthNames = [
   "December",
 ];
 
-function groupByMonth(events: PostFragment[]) {
+function groupByMonth(events: IEvent[]) {
   const array = [] as IEventsByYear[];
-  events.forEach((event) => {
-    const startDate = event.metadata.attributes.find((attribute) => attribute.traitType === "Start date");
+  events.forEach((e) => {
+    const startDate = e._event.metadata.attributes.find((attribute) => attribute.traitType === "Start date");
     if (startDate && startDate.value) {
       const startDateValue = new Date(parseInt(startDate.value) * 1000);
       const eventYear = startDateValue.getFullYear();
@@ -38,14 +39,14 @@ function groupByMonth(events: PostFragment[]) {
       const year = array.find((years: IEventsByYear) => years.year === eventYear);
 
       if (!year) {
-        array.push({ year: eventYear, months: [{ month: eventMonth, events: [event] }] });
+        array.push({ year: eventYear, months: [{ month: eventMonth, events: [e] }] });
       } else {
         const months = year.months;
         const month = months.find((yearEvents: IEventsByMonth) => yearEvents.month === eventMonth);
         if (!month) {
-          months.push({ month: eventMonth, events: [event] });
+          months.push({ month: eventMonth, events: [e] });
         } else {
-          month.events.push(event);
+          month.events.push(e);
         }
       }
     }
@@ -56,26 +57,11 @@ function groupByMonth(events: PostFragment[]) {
 }
 
 type Props = {
-  events: PostFragment[];
-  attendance: IAttendance[];
+  events: IEvent[];
 };
 
-const ProfilesList = ({ events, attendance }: Props) => {
-  const sortedEvents = [...events];
-  sortedEvents.sort((a, b) => {
-    let aDate = 0;
-    let bDate = 0;
-
-    let aStartAttr = a.metadata.attributes.find(attribute => attribute.traitType === "Start date" );
-    let bStartAttr = b.metadata.attributes.find(attribute => attribute.traitType === "Start date" );
-    if (aStartAttr && bStartAttr) {
-      aDate = aStartAttr.value ? parseInt(aStartAttr.value) : 0;
-      bDate = bStartAttr.value ? parseInt(bStartAttr.value) : 0;
-    }
-    return aDate - bDate;
-  });
-  console.log(events);
-  const groupedByMonth = groupByMonth(sortedEvents);
+const ProfilesList = ({ events }: Props) => {
+  const groupedByMonth = groupByMonth(events);
 
   return (
     <>
@@ -84,14 +70,13 @@ const ProfilesList = ({ events, attendance }: Props) => {
           <h2 className="w-full text-end px-2 text-2xl text-gray-600">{year.year}</h2>
           {year.months.map((month) => (
             <div key={month.month}>
-              <h3 className="text-xl font-medium p-2 mt-2">{monthNames[month.month]}</h3>
-              <ul className="space-y-4">
+              <h3 className="text-xl text-lime-900 font-medium p-2 mt-6 rounded-md bg-lime-50">{monthNames[month.month]}</h3>
+              <ul className="space-y-2">
                 {month.events &&
                   month.events.map((_event) => (
                     <EventDetails
-                      key={_event.id}
+                      key={_event._event.id}
                       _event={_event}
-                      attendees={attendance.find((attendance) => attendance._event === _event.id)?.attendees ?? []}
                     />
                   ))}
               </ul>
