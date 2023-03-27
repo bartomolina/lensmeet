@@ -19,6 +19,8 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
     website: "",
     twitter: "",
     instagram: "",
+    telegram: "",
+    discord: "",
     github: "",
     linkedin: "",
   };
@@ -32,6 +34,8 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
       website: getProfileAttribute("website") ?? "",
       twitter: getProfileAttribute("twitter") ?? "",
       instagram: getProfileAttribute("instagram") ?? "",
+      telegram: getProfileAttribute("telegram") ?? "",
+      discord: getProfileAttribute("discord") ?? "",
       github: getProfileAttribute("github") ?? "",
       linkedin: getProfileAttribute("linkedin") ?? "",
     };
@@ -98,6 +102,16 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
                 {attributes.instagram && (
                   <a href={`https://instagram.com/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
                     <Image src="/instagram.svg" alt="Instagram" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.telegram && (
+                  <a href={`https://t.me/${attributes.telegram}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/telegram.svg" alt="Telegram" width={20} height={20} />
+                  </a>
+                )}
+                {attributes.discord && (
+                  <a href={`https://discordapp.com/users/${attributes.twitter}`} target="_blank" rel="noopener noreferrer">
+                    <Image src="/discord.svg" alt="Discord" width={20} height={20} />
                   </a>
                 )}
                 {attributes.github && (

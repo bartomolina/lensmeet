@@ -2,12 +2,13 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "@headlessui/react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useSwitchNetwork } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { useActiveProfile, useWalletLogin, useWalletLogout, useApolloClient } from "@lens-protocol/react-web";
 import ActiveLink from "./active-link";
 import { getPictureURL } from "../lib/utils";
 import { GlobeAsiaAustraliaIcon } from "@heroicons/react/24/solid";
+import { isProd } from "../lib/utils";
 
 const navigation = [
   { name: "Members", href: "/" },
@@ -16,12 +17,18 @@ const navigation = [
 
 const Nav = () => {
   const router = useRouter();
+  const { switchNetwork } = useSwitchNetwork();
   const { data: activeProfile } = useActiveProfile();
   const { execute: login } = useWalletLogin();
   const { execute: logout } = useWalletLogout();
   const { isConnected } = useAccount();
   const { connectAsync } = useConnect({
     connector: new InjectedConnector(),
+    onSuccess(data) {
+      if (switchNetwork) {
+        switchNetwork(isProd ? 137 : 80001)
+      }
+    },
   });
   const { disconnectAsync } = useDisconnect();
   const { cache } = useApolloClient();

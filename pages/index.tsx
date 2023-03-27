@@ -130,7 +130,7 @@ const Home = () => {
     }
 
     return filtered;
-  }, [profiles, searchFilter, locationFilter, eventFilter, followingFilter, listOwner]);
+  }, [profiles, events, searchFilter, locationFilter, eventFilter, followingFilter, listOwner]);
 
   const locations = useMemo(() => {
     let groupedLocations = new Set(

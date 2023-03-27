@@ -7,11 +7,9 @@ import { v4 as uuidv4 } from "uuid";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import {
-  ProfileFragment,
   useActiveProfile,
   useApolloClient,
   useUpdateProfileDetails,
-  ProfileOwnedByMeFragment,
 } from "@lens-protocol/react-web";
 import { gql } from "@apollo/client";
 import { useNotifications } from "../components/notifications-context";
@@ -30,6 +28,8 @@ const Profile = () => {
       website: "",
       twitter: "",
       instagram: "",
+      telegram: "",
+      discord: "",
       github: "",
       linkedin: "",
     },
@@ -57,6 +57,8 @@ const Profile = () => {
           website: getProfileAttribute("website") ?? "",
           twitter: getProfileAttribute("twitter") ?? "",
           instagram: getProfileAttribute("instagram") ?? "",
+          telegram: getProfileAttribute("telegram") ?? "",
+          discord: getProfileAttribute("discord") ?? "",
           github: getProfileAttribute("github") ?? "",
           linkedin: getProfileAttribute("linkedin") ?? "",
         },
@@ -289,6 +291,42 @@ const Profile = () => {
                         name="instagram"
                         id="instagram"
                         value={formData.attributes.instagram}
+                        onChange={handleFormChange}
+                        className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="telegram" className="text-sm font-medium">
+                      Telegram
+                    </label>
+                    <div className="mt-1 flex shadow-sm">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 px-3 text-sm border-gray-300 text-gray-500">
+                        t.me/
+                      </span>
+                      <input
+                        type="text"
+                        name="telegram"
+                        id="telegram"
+                        value={formData.attributes.telegram}
+                        onChange={handleFormChange}
+                        className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="discord" className="text-sm font-medium">
+                      Discord
+                    </label>
+                    <div className="mt-1 flex shadow-sm">
+                      <span className="inline-flex items-center rounded-l-md border border-r-0 px-3 text-sm border-gray-300 text-gray-500">
+                        discordapp.com/users/
+                      </span>
+                      <input
+                        type="text"
+                        name="discord"
+                        id="discord"
+                        value={formData.attributes.discord}
                         onChange={handleFormChange}
                         className="w-full rounded-r-md p-2 text-sm ring-1 ring-inset ring-gray-300"
                       />
