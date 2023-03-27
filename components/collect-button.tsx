@@ -1,3 +1,4 @@
+import { IEvent } from "../global";
 import { FormEvent, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
