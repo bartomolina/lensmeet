@@ -54,10 +54,10 @@ const Nav = () => {
 
   return (
     <header className="flex border-b py-5 justify-between">
-      <div className="flex space-x-8">
+      <div className="flex space-x-10">
         <Link href={"/"} className="flex items-center text-4xl">
-          <GlobeAsiaAustraliaIcon className="h-12 w-12 text-lime-700" />
-          <div className="inline-block ml-1 px-1 text-xl text-lime-900">LensMeet.io</div>
+          <GlobeAsiaAustraliaIcon className="h-12 w-12 text-lime-900" />
+          <div className="inline-block font-semibold ml-1 px-1 text-xl text-lime-900">LensMeet.io</div>
         </Link>
         <div className="flex space-x-5 text-sm">
           {navigation.map((item) => (

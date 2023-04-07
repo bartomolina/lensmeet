@@ -6,13 +6,13 @@ type LayoutProps = {
 };
 
 const Layout = ({ children }: LayoutProps) => (
-  <div className="min-h-full">
-    <div className="max-w-2xl mx-auto text-gray-900 md:px-0 px-4">
-      <Nav />
+  <div className="min-h-full w-7/12 mx-auto">
+    <Nav />
+    <div className="min-h-full text-gray-900 md:px-0 px-4">
       <main className="py-5">{children}</main>
-      <div className="sticky top-[100vh]">
-        <Footer />
-      </div>
+    </div>
+    <div className="sticky top-[100vh]">
+      <Footer />
     </div>
   </div>
 );

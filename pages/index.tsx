@@ -9,6 +9,7 @@ import { useEvents } from "../components/events-context";
 import { getMembersQuery } from "../lib/api";
 import ProfilesList from "../components/profiles-list";
 import FollowAll from "../components/follow-all";
+import Lists from "../components/lists";
 import { isProd } from "../lib/utils";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -108,8 +109,8 @@ const Home = () => {
     }
 
     if (eventFilter) {
-      const attendees = events.find(e => e._event.id === eventFilter)?.attendees;
-      filtered = filtered.filter((profile) => attendees?.map(a => a.id).includes(profile.id));
+      const attendees = events.find((e) => e._event.id === eventFilter)?.attendees;
+      filtered = filtered.filter((profile) => attendees?.map((a) => a.id).includes(profile.id));
     }
 
     if (followingFilter) {
@@ -147,92 +148,101 @@ const Home = () => {
         <title>LensMeet</title>
         <meta name="description" content="LensMeet" />
       </Head>
-      <div className="space-y-4">
-        <section className="space-y-3">
-          <div className="flex justify-between">
-            <div className="space-x-3">
-              <span className="text-sm italic text-gray-700">
-                Showing <strong className="text-gray-900">{filteredProfiles.length}</strong> member(s)
-              </span>
-              <FollowAll profiles={filteredProfiles} />
-            </div>
-            <div>
-              <label htmlFor="search" className="sr-only">
-                Search
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
-                <input
-                  type="text"
-                  id="search"
-                  name="search"
-                  className="rounded-md border py-1 pr-2 pl-8 text-sm"
-                  onChange={(event) => setSearchFilter(event.target.value)}
-                  value={searchFilter}
-                />
+      <div className="grid grid-cols-7">
+        {/* <div className="col-span-2">
+          <Lists />
+        </div> */}
+        <div className="col-span-7 space-y-4">
+          <section className="space-y-3">
+            <div className="flex justify-between">
+              <div className="space-x-3">
+                <span className="text-sm italic text-gray-700">
+                  Showing <strong className="text-gray-900">{filteredProfiles.length}</strong> member(s)
+                </span>
+                <FollowAll profiles={filteredProfiles} />
               </div>
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <div className="flex space-x-2">
               <div>
-                <label htmlFor="location" className="sr-only">
-                  Location
+                <label htmlFor="search" className="sr-only">
+                  Search
                 </label>
-                <select
-                  id="location"
-                  name="location"
-                  className="rounded-md border px-2 py-1 text-sm"
-                  onChange={(event) => setLocationFilter(event.target.value)}
-                  value={locationFilter}
-                >
-                  <option value="">Location</option>
-                  {locations &&
-                    [...Array.from(locations)].map((location) => <option key={location}>{location}</option>)}
-                </select>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </div>
+                  <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    className="rounded-md border py-1 pr-2 pl-8 text-sm"
+                    onChange={(event) => setSearchFilter(event.target.value)}
+                    value={searchFilter}
+                  />
+                </div>
               </div>
-              {activeProfile && !profileLoading && (
+            </div>
+            <div className="flex justify-between">
+              <div className="flex space-x-2">
                 <div>
-                  <label htmlFor="following" className="sr-only">
-                    Following
+                  <label htmlFor="location" className="sr-only">
+                    Location
                   </label>
                   <select
-                    id="following"
-                    name="following"
+                    id="location"
+                    name="location"
                     className="rounded-md border px-2 py-1 text-sm"
-                    onChange={(event) => setFollowingFilter(event.target.value)}
-                    value={followingFilter}
+                    onChange={(event) => setLocationFilter(event.target.value)}
+                    value={locationFilter}
                   >
-                    <option value="">Following?</option>
-                    <option>Following</option>
-                    <option>Not following</option>
+                    <option value="">Location</option>
+                    {locations &&
+                      [...Array.from(locations)].map((location) => <option key={location}>{location}</option>)}
                   </select>
                 </div>
-              )}
+                {activeProfile && !profileLoading && (
+                  <div>
+                    <label htmlFor="following" className="sr-only">
+                      Following
+                    </label>
+                    <select
+                      id="following"
+                      name="following"
+                      className="rounded-md border px-2 py-1 text-sm"
+                      onChange={(event) => setFollowingFilter(event.target.value)}
+                      value={followingFilter}
+                    >
+                      <option value="">Following?</option>
+                      <option>Following</option>
+                      <option>Not following</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+              <div>
+                <label htmlFor="event" className="sr-only">
+                  Event
+                </label>
+                <select
+                  id="event"
+                  name="event"
+                  className="rounded-md border px-2 py-1 text-sm"
+                  onChange={(event) => setEventFilter(event.target.value)}
+                  value={eventFilter}
+                >
+                  <option value="">Event</option>
+                  {events &&
+                    events.map((e) => (
+                      <option key={e._event.id} value={e._event.id}>
+                        {e._event.metadata.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
-            <div>
-              <label htmlFor="event" className="sr-only">
-                Event
-              </label>
-              <select
-                id="event"
-                name="event"
-                className="rounded-md border px-2 py-1 text-sm"
-                onChange={(event) => setEventFilter(event.target.value)}
-                value={eventFilter}
-              >
-                <option value="">Event</option>
-                {events &&
-                    events.map((e) => <option key={e._event.id} value={e._event.id}>{e._event.metadata.name}</option>)}
-              </select>
-            </div>
-          </div>
-        </section>
-        <section>
-          <ProfilesList profiles={filteredProfiles} owner={listOwner} />
-        </section>
+          </section>
+          <section>
+            <ProfilesList profiles={filteredProfiles} owner={listOwner} />
+          </section>
+        </div>
       </div>
     </>
   );

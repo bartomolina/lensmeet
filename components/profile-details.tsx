@@ -90,7 +90,7 @@ const ProfileDetails = ({ id, isOwner }: Props) => {
             <div className="flex items-center space-x-5">
               <div className="flex space-x-2.5">
                 {attributes.website && (
-                  <a href={attributes.website} target="_blank" rel="noopener noreferrer">
+                  <a href={!/^https?:\/\//i.test(attributes.website) ? "https://" + attributes.website : attributes.website} target="_blank" rel="noopener noreferrer">
                     <GlobeAltIcon className="h-5 w-5" />
                   </a>
                 )}
