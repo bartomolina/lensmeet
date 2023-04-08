@@ -31,10 +31,7 @@ const multiPageFetcher = async (url: string) => {
 
 const Home = () => {
   const [list, setList] = useState<string>("845068988534030337");
-  const { data: listMembers } = useSWR(
-    `/lenslists/lists/${list}/members?limit=50&offset=0`,
-    multiPageFetcher
-  );
+  const { data: listMembers } = useSWR(`/lenslists/lists/${list}/members?limit=50&offset=0`, multiPageFetcher);
   const { data: listInfo } = useSWR(`/lenslists/lists/${list}`, fetcher);
   const { data: activeProfile, loading: profileLoading } = useActiveProfile();
   const [searchFilter, setSearchFilter] = useState("");
@@ -197,7 +194,9 @@ const Home = () => {
                   >
                     <option value="">Location</option>
                     {locations &&
-                      [...Array.from(locations)].map((location) => <option key={location}>{location}</option>)}
+                      [...Array.from(locations)]
+                        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+                        .map((location) => <option key={location}>{location}</option>)}
                   </select>
                 </div>
                 {activeProfile && !profileLoading && (

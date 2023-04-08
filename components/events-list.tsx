@@ -67,21 +67,20 @@ const ProfilesList = ({ events }: Props) => {
     <>
       {groupedByMonth.map((year) => (
         <div key={year.year}>
-          <h2 className="w-full text-end px-2 text-2xl text-gray-600">{year.year}</h2>
-          {year.months.map((month) => (
-            <div key={month.month}>
-              <h3 className="text-xl text-lime-900 font-medium p-2 mt-6 rounded-md bg-lime-50">{monthNames[month.month]}</h3>
-              <ul className="space-y-2">
-                {month.events &&
-                  month.events.map((_event) => (
-                    <EventDetails
-                      key={_event._event.id}
-                      _event={_event}
-                    />
-                  ))}
-              </ul>
-            </div>
-          ))}
+          <h2 className="w-full text-end px-2 text-lg text-gray-900">{year.year}</h2>
+          <div className="space-y-8">
+            {year.months.map((month) => (
+              <div key={month.month}>
+                <h3 className="text-2xl font-light text-gray-700 border-b border-gray-300 my-3 py-2">
+                  {monthNames[month.month]}
+                </h3>
+                <ul className="space-y-2">
+                  {month.events &&
+                    month.events.map((_event) => <EventDetails key={_event._event.id} _event={_event} />)}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </>

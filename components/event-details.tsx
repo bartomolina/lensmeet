@@ -34,9 +34,7 @@ const EventDetails = ({ _event }: Props) => {
 
   let dateRange = "";
   if (attributes.startDate && attributes.endDate) {
-    dateRange = `${monthNames[attributes.startDate.getMonth()]} ${attributes.startDate.getDate()} - ${
-      monthNames[attributes.endDate.getMonth()]
-    } ${attributes.endDate.getDate()}`;
+    dateRange = `${attributes.startDate.getDate()} - ${attributes.endDate.getDate()}`;
   }
 
   return (
@@ -46,38 +44,37 @@ const EventDetails = ({ _event }: Props) => {
           href={`${isProd ? "https://lenster.xyz/posts/" : "https://testnet.lenster.xyz/posts/"}${_event._event.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center px-7 py-4"
+          className="flex items-center px-2 py-2 space-x-6"
         >
-          <div className="w-14 h-14 relative flex-none">
+          <div className="w-16 h-10 relative flex-none">
             {attributes.country && (
               <Image
                 src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.4/flags/4x3/${attributes.country?.toLowerCase()}.svg`}
                 alt={attributes.country}
                 fill
-                sizes="(max-width: 56px) 100vw"
-                className="object-cover rounded-full"
+                sizes="(max-width: 64px) 100vw"
+                className="object-cover border"
               />
             )}
           </div>
-          <div className="w-full ml-7">
-            <div className="flex justify-between">
-              <div className="items-center">
+          <div className="flex justify-between w-full ml-7 space-x-4">
+            <div className="flex w-full">
+              <div className="w-1/3">
                 <p className="text-lg font-medium">{_event._event.metadata.name}</p>
                 <p className="-mt-1 text-xs text-lime-700">{attributes.organizer}</p>
               </div>
-              {attributes.startDate && <div className="text-gray-400">{dateRange}</div>}
+              {attributes.startDate && (
+                <div className="w-1/3 flex items-center font-light text-2xl text-gray-400 whitespace-nowrap">
+                  {dateRange}
+                </div>
+              )}
+              <p className="w-1/3 flex items-center">
+                <MapPinIcon className="mr-0.5 h-4 w-4" />
+                {attributes.location}
+              </p>
             </div>
-            <p className="mt-3 text-gray-600">{_event._event.metadata.content}</p>
-            <p className="mt-3 flex items-center text-xs">
-              <MapPinIcon className="mr-0.5 h-4 w-4" />
-              {attributes.location}
-            </p>
-          </div>
-        </a>
-        {(_event.attendees.length > 0 || activeProfile) && (
-          <div className="flex justify-between items-center space-x-5 py-3 px-6 text-gray-600">
-            <div className="flex items-center">
-              {_event.attendees.length > 0 && (
+            <div className="flex items-center w-28">
+              {(_event.attendees.length > 0 || activeProfile) && _event.attendees.length > 0 && (
                 <>
                   <div className="isolate flex -space-x-2 overflow-hidden">
                     {_event.attendees.map((attendee) => (
@@ -92,17 +89,14 @@ const EventDetails = ({ _event }: Props) => {
                       </div>
                     ))}
                   </div>
-                  <span className="text-sm ml-3 italic">
-                    <strong>{_event.attendees.length}</strong> attending
-                  </span>
                 </>
               )}
-            </div>
-            <div className="flex">
-              <CollectButton _event={_event} />
+              <div className="flex">
+                <CollectButton _event={_event} />
+              </div>
             </div>
           </div>
-        )}
+        </a>
       </li>
     </>
   );

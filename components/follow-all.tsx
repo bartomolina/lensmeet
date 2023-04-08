@@ -32,7 +32,7 @@ const FollowAll = ({ profiles }: Props) => {
         return profile.id != activeProfile.id && !profile.isFollowedByMe && !profile.followModule;
       });
 
-      const profilesToFollow = filteredProfiles.map((profile) => {
+      let profilesToFollow = filteredProfiles.map((profile) => {
         return { profile: profile.id };
       });
 
@@ -42,6 +42,11 @@ const FollowAll = ({ profiles }: Props) => {
         );
         setFollowing(false);
         return;
+      }
+
+      if (profilesToFollow.length > 20) {
+        alert("Following the first 20 profiles. Click again to follow the next 20 profiles.");
+        profilesToFollow = profilesToFollow.slice(0, 20);
       }
 
       if (isConnected) {
@@ -62,29 +67,35 @@ const FollowAll = ({ profiles }: Props) => {
         // @ts-ignore
         const typedData = typedResult.data.createFollowTypedData.typedData;
         const lensHub = new ethers.Contract(LensHubContract, LensHubAbi, signer);
-        const signature = await signer._signTypedData(
-          omit(typedData.domain, "__typename"),
-          omit(typedData.types, "__typename"),
-          omit(typedData.value, "__typename")
-        );
-        const { v, r, s } = splitSignature(signature);
 
-        const result = await lensHub.followWithSig({
-          follower: signer._address,
-          profileIds: typedData.value.profileIds,
-          datas: typedData.value.datas,
-          sig: {
-            v,
-            r,
-            s,
-            deadline: typedData.value.deadline,
-          },
-        });
-        showNotification(
-          "Follow all in progress",
-          "Please click here and wait for the transaction to complete and refresh the page after a few seconds",
-          result.hash
-        );
+        try {
+          const signature = await signer._signTypedData(
+            omit(typedData.domain, "__typename"),
+            omit(typedData.types, "__typename"),
+            omit(typedData.value, "__typename")
+          );
+          const { v, r, s } = splitSignature(signature);
+
+          const result = await lensHub.followWithSig({
+            follower: signer._address,
+            profileIds: typedData.value.profileIds,
+            datas: typedData.value.datas,
+            sig: {
+              v,
+              r,
+              s,
+              deadline: typedData.value.deadline,
+            },
+          });
+          showNotification(
+            "Follow all in progress",
+            "Please click here and wait for the transaction to complete and refresh the page after a few seconds",
+            result.hash
+          );
+        } catch (e: any) {
+          setFollowing(false);
+          showError("Error", e.message);
+        }
       }
     }
   };

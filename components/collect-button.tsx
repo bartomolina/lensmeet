@@ -100,7 +100,7 @@ const CollectButton = ({ _event }: Props) => {
           <button
             onClick={handleCollectAPI}
             disabled={collecting}
-            className={`border rounded-md px-3 py-1 bg-opacity-20 ${
+            className={`border rounded-md px-3 py-1 bg-opacity-20 whitespace-nowrap ${
               collecting
                 ? "border-gray-500 text-gray-900 bg-gray-100"
                 : "border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100"
