@@ -30,11 +30,12 @@ const multiPageFetcher = async (url: string) => {
 };
 
 const Home = () => {
+  const [list, setList] = useState<string>("845068988534030337");
   const { data: listMembers } = useSWR(
-    "/lenslists/lists/845068988534030337/members?limit=50&offset=0",
+    `/lenslists/lists/${list}/members?limit=50&offset=0`,
     multiPageFetcher
   );
-  const { data: listInfo } = useSWR("/lenslists/lists/845068988534030337", fetcher);
+  const { data: listInfo } = useSWR(`/lenslists/lists/${list}`, fetcher);
   const { data: activeProfile, loading: profileLoading } = useActiveProfile();
   const [searchFilter, setSearchFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
@@ -149,11 +150,12 @@ const Home = () => {
         <meta name="description" content="LensMeet" />
       </Head>
       <div className="grid grid-cols-7">
-        {/* <div className="col-span-2">
-          <Lists />
-        </div> */}
-        <div className="col-span-7 space-y-4">
-          <section className="space-y-3">
+        <div className="col-span-2 hidden xl:inline">
+          <div className="h-24"></div>
+          <Lists list={list} setList={setList} />
+        </div>
+        <div className="col-span-7 xl:col-span-5">
+          <section className="space-y-3 h-24">
             <div className="flex justify-between">
               <div className="space-x-3">
                 <span className="text-sm italic text-gray-700">
