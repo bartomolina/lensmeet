@@ -1,5 +1,6 @@
 import { IEvent } from "../global";
 import Image from "next/image";
+import Link from "next/link";
 import { MapPinIcon } from "@heroicons/react/24/solid";
 import { PostFragment, ProfileFragment, useActiveProfile } from "@lens-protocol/react-web";
 import CollectButton from "./collect-button";
@@ -40,12 +41,7 @@ const EventDetails = ({ _event }: Props) => {
   return (
     <>
       <li className="border rounded shadow-sm bg-white divide-y hover:-translate-y-0.5 transform transition">
-        <a
-          href={`${isProd ? "https://lenster.xyz/posts/" : "https://testnet.lenster.xyz/posts/"}${_event._event.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center px-2 py-2 space-x-6"
-        >
+        <Link href={`/event/${_event._event.id}`} className="flex items-center px-2 py-2 space-x-6">
           <div className="w-16 h-10 relative flex-none">
             {attributes.country && (
               <Image
@@ -96,7 +92,7 @@ const EventDetails = ({ _event }: Props) => {
               </div>
             </div>
           </div>
-        </a>
+        </Link>
       </li>
     </>
   );

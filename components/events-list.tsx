@@ -1,4 +1,5 @@
 import { IEvent } from "../global";
+import Link from "next/link";
 import { PostFragment } from "@lens-protocol/react";
 import EventDetails from "./event-details";
 
@@ -65,6 +66,12 @@ const ProfilesList = ({ events }: Props) => {
 
   return (
     <>
+      <Link
+        href={"/newEvent"}
+        className={`border rounded-md px-3 py-1 bg-opacity-20 border-lime-500 text-lime-900 bg-lime-50 hover:bg-lime-100`}
+      >
+        Create event
+      </Link>
       {groupedByMonth.map((year) => (
         <div key={year.year}>
           <h2 className="w-full text-end px-2 text-lg text-gray-900">{year.year}</h2>

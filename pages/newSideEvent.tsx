@@ -18,23 +18,26 @@ import {
   ContentFocus,
   NftAttributeDisplayType,
 } from "@lens-protocol/react-web";
-import { gql } from "@apollo/client";
+import { gql, useReactiveVar } from "@apollo/client";
 import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
 import { useNotifications } from "../components/notifications-context";
+import { useEvents } from "../components/events-context";
 import { omit, splitSignature, LensHubContract, LensHubAbi, LensFollowAbi, createPostQuery } from "../lib/api";
 
-const PostEvent = () => {
+const NewSideEvent = () => {
   const { data: profile, loading } = useActiveProfile();
+  const { events } = useEvents();
   // @ts-ignore
   const { execute: create, error, isPending } = useCreatePost({ publisher: profile, upload });
   const [formData, setFormData] = useState({
+    _event: "",
     name: "ETHGlobal Tokyo",
     description: "Meet your friends at ETHGlobal Tokyo. #lensmeet. LensMeet.io",
     location: "Tokyo",
-    country: "JP",
     organizer: "ETHGlobal",
     startDate: new Date().toISOString().substring(0, 10),
     endDate: new Date().toISOString().substring(0, 10),
+    price: 0,
   });
   const { showNotification, showError } = useNotifications();
   const { data: activeProfile } = useActiveProfile();
@@ -46,7 +49,7 @@ const PostEvent = () => {
   const { disconnectAsync } = useDisconnect();
   const [submitting, setSubmitting] = useState(false);
 
-  const handleFormChange = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const description = event.currentTarget.id === "description" ? event.currentTarget.value : formData.description;
     const endDate = event.currentTarget.id === "endDate" ? event.currentTarget.value : formData.endDate;
 
@@ -54,8 +57,8 @@ const PostEvent = () => {
       ...formData,
       [event.currentTarget.id]: event.currentTarget.value,
       description:
-        event.currentTarget.id === "name"
-          ? `Meet your friends at ${event.currentTarget.value}. #lensmeet. LensMeet.io`
+        event.currentTarget.id === "name" || event.currentTarget.id === "_event"
+          ? `Meet your friends at ${event.currentTarget.value} (#${formData._event}). #lensmeet. LensMeet.io`
           : description,
       endDate: event.currentTarget.id === "startDate" ? event.currentTarget.value : endDate,
     });
@@ -76,13 +79,13 @@ const PostEvent = () => {
           attributes: [
             {
               displayType: NftAttributeDisplayType.String,
-              value: formData.location,
-              traitType: "Location",
+              value: formData._event,
+              traitType: "Event",
             },
             {
               displayType: NftAttributeDisplayType.String,
-              value: formData.country,
-              traitType: "Country",
+              value: formData.location,
+              traitType: "Location",
             },
             {
               displayType: NftAttributeDisplayType.String,
@@ -99,6 +102,11 @@ const PostEvent = () => {
               value: new Date(formData.endDate).getTime() / 1000,
               traitType: "End date",
             },
+            {
+              displayType: NftAttributeDisplayType.Number,
+              value: formData.price,
+              traitType: "Price",
+            },
           ],
         },
         followersOnly: true,
@@ -113,13 +121,13 @@ const PostEvent = () => {
     if (activeProfile) {
       const attributes = [
         {
-          traitType: "Location",
+          traitType: "Event",
           value: formData.location,
           displayType: NftAttributeDisplayType.String.toLowerCase(),
         },
         {
-          traitType: "Country",
-          value: formData.country,
+          traitType: "Location",
+          value: formData.location,
           displayType: NftAttributeDisplayType.String.toLowerCase(),
         },
         {
@@ -135,6 +143,11 @@ const PostEvent = () => {
         {
           traitType: "End date",
           value: (new Date(formData.endDate).getTime() / 1000).toString(),
+          displayType: NftAttributeDisplayType.Number.toLowerCase(),
+        },
+        {
+          traitType: "Price",
+          value: formData.price,
           displayType: NftAttributeDisplayType.Number.toLowerCase(),
         },
       ];
@@ -211,6 +224,27 @@ const PostEvent = () => {
           <form className="space-y-7 divide-y" onSubmit={handleSubmitAPI}>
             <div className="space-y-4">
               <div>
+                <label htmlFor="_event" className="block text-sm font-medium leading-6 text-gray-900">
+                  Event
+                </label>
+                <div className="mt-1 flex rounded-md shadow-sm">
+                  <select
+                    id="_event"
+                    name="_event"
+                    className="rounded-md border px-2 py-1 text-sm"
+                    onChange={handleFormChange}
+                    value={formData._event}
+                  >
+                    <option value="">Event</option>
+                    {events.map((_event) => (
+                      <option key={_event._event.id} value={_event._event.id}>
+                        {_event._event.metadata.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
                 <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
                   Name
                 </label>
@@ -250,21 +284,6 @@ const PostEvent = () => {
                     name="location"
                     id="location"
                     value={formData.location}
-                    onChange={handleFormChange}
-                    className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                  Country
-                </label>
-                <div className="mt-1 flex rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="country"
-                    id="country"
-                    value={formData.country}
                     onChange={handleFormChange}
                     className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
                   />
@@ -315,6 +334,21 @@ const PostEvent = () => {
                   />
                 </div>
               </div>
+              <div>
+                <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">
+                  Price
+                </label>
+                <div className="mt-1 flex rounded-md shadow-sm">
+                  <input
+                    type="number"
+                    name="price"
+                    id="price"
+                    value={formData.price}
+                    onChange={handleFormChange}
+                    className="w-full rounded-md p-2 text-sm ring-1 ring-inset ring-gray-300"
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex justify-end pt-5">
               <button
@@ -336,4 +370,4 @@ const PostEvent = () => {
   );
 };
 
-export default PostEvent;
+export default NewSideEvent;
